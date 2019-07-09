@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
+/** 反射映射类 */
 public final class RefClass {
 
     private static HashMap<Class<?>,Constructor<?>> REF_TYPES = new HashMap<Class<?>, Constructor<?>>();
@@ -27,6 +28,7 @@ public final class RefClass {
         }
     }
 
+    /** 将 mapping class 映射到对应反射影子类 */
     public static Class<?> load(Class<?> mappingClass, String className) {
         try {
             return load(mappingClass, Class.forName(className));
