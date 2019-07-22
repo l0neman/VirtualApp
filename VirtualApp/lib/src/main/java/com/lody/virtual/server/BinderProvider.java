@@ -49,7 +49,9 @@ public final class BinderProvider extends ContentProvider {
   @Override
   public boolean onCreate() {
     Context context = getContext();
+    // 守护服务进程。
     DaemonService.startup(context);
+
     if (!VirtualCore.get().isStartup()) {
       return true;
     }
@@ -62,6 +64,7 @@ public final class BinderProvider extends ContentProvider {
     VAppManagerService.systemReady();
     IPCBus.register(IAppManager.class, VAppManagerService.get());
     BroadcastSystem.attach(VActivityManagerService.get(), VAppManagerService.get());
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       IPCBus.register(IJobService.class, VJobSchedulerService.get());
     }

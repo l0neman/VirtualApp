@@ -200,11 +200,16 @@ public final class VirtualCore {
       });
 
       detectProcessType();
+
+      // hook 系统相关服务。
       InvocationStubManager invocationStubManager = InvocationStubManager.getInstance();
       invocationStubManager.init();
       invocationStubManager.injectAll();
+
       ContextFixer.fixContext(context);
+
       isStartUp = true;
+
       if (initLock != null) {
         initLock.open();
         initLock = null;
@@ -236,18 +241,18 @@ public final class VirtualCore {
       throw new IllegalStateException("Initializer = NULL");
     }
     switch (processType) {
-      case Main:
-        initializer.onMainProcess();
-        break;
-      case VAppClient:
-        initializer.onVirtualProcess();
-        break;
-      case Server:
-        initializer.onServerProcess();
-        break;
-      case CHILD:
-        initializer.onChildProcess();
-        break;
+    case Main:
+      initializer.onMainProcess();
+      break;
+    case VAppClient:
+      initializer.onVirtualProcess();
+      break;
+    case Server:
+      initializer.onServerProcess();
+      break;
+    case CHILD:
+      initializer.onChildProcess();
+      break;
     }
   }
 
@@ -258,17 +263,17 @@ public final class VirtualCore {
     mainProcessName = context.getApplicationInfo().processName;
     // Current process name
     processName = ActivityThread.getProcessName.call(mainThread);
+
     if (processName.equals(mainProcessName)) {
       processType = ProcessType.Main;
-    } else
-      if (processName.endsWith(Constants.SERVER_PROCESS_NAME)) {
-        processType = ProcessType.Server;
-      } else
-        if (VActivityManager.get().isAppProcess(processName)) {
-          processType = ProcessType.VAppClient;
-        } else {
-          processType = ProcessType.CHILD;
-        }
+    } else if (processName.endsWith(Constants.SERVER_PROCESS_NAME)) {
+      processType = ProcessType.Server;
+    } else if (VActivityManager.get().isAppProcess(processName)) {
+      processType = ProcessType.VAppClient;
+    } else {
+      processType = ProcessType.CHILD;
+    }
+
     if (isVAppProcess()) {
       systemPid = VActivityManager.get().getSystemPid();
     }

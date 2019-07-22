@@ -51,14 +51,15 @@ public class PackageParserEx {
         PackageParser parser = PackageParserCompat.createParser(packageFile);
         PackageParser.Package p = PackageParserCompat.parsePackage(parser, packageFile, 0);
         if (p.requestedPermissions.contains("android.permission.FAKE_PACKAGE_SIGNATURE")
-                && p.mAppMetaData != null
-                && p.mAppMetaData.containsKey("fake-signature")) {
+                && p.mAppMetaData != null && p.mAppMetaData.containsKey("fake-signature")) {
+
             String sig = p.mAppMetaData.getString("fake-signature");
             p.mSignatures = new Signature[]{new Signature(sig)};
             VLog.d(TAG, "Using fake-signature feature on : " + p.packageName);
         } else {
             PackageParserCompat.collectCertificates(parser, p, PackageParser.PARSE_IS_SYSTEM);
         }
+
         return buildPackageCache(p);
     }
 

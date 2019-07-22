@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.WindowManager;
 
 import com.lody.virtual.client.core.VirtualCore;
+import com.lody.virtual.client.ipc.VActivityManager;
 
 import io.virtualapp.R;
 import io.virtualapp.VCommends;
@@ -40,8 +41,8 @@ public class SplashActivity extends VActivity {
             HomeActivity.goHome(this);
             finish();
         });
-    }
 
+    }
 
     private void doActionInThread() {
         if (!VirtualCore.get().isEngineLaunched()) {

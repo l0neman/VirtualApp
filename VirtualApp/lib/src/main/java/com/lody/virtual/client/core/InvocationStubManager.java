@@ -66,153 +66,163 @@ import static android.os.Build.VERSION_CODES.N;
 
 /**
  * @author Lody
- *
  */
 public final class InvocationStubManager {
 
-    private static InvocationStubManager sInstance = new InvocationStubManager();
-    private static boolean sInit;
+  private static InvocationStubManager sInstance = new InvocationStubManager();
+  private static boolean sInit;
 
-	private Map<Class<?>, IInjector> mInjectors = new HashMap<>(13);
+  private Map<Class<?>, IInjector> mInjectors = new HashMap<>(13);
 
-	private InvocationStubManager() {
-	}
+  private InvocationStubManager() {
+  }
 
-	public static InvocationStubManager getInstance() {
-		return sInstance;
-	}
+  public static InvocationStubManager getInstance() {
+    return sInstance;
+  }
 
-	void injectAll() throws Throwable {
-		for (IInjector injector : mInjectors.values()) {
-			injector.inject();
-		}
-		// XXX: Lazy inject the Instrumentation,
-		addInjector(AppInstrumentation.getDefault());
-	}
+  void injectAll() throws Throwable {
+    for (IInjector injector : mInjectors.values()) {
+      injector.inject();
+    }
 
-    /**
-	 * @return if the InvocationStubManager has been initialized.
-	 */
-	public boolean isInit() {
-		return sInit;
-	}
+    // XXX: Lazy inject the Instrumentation,
+    addInjector(AppInstrumentation.getDefault());
+  }
+
+  /**
+   * @return if the InvocationStubManager has been initialized.
+   */
+  public boolean isInit() {
+    return sInit;
+  }
 
 
-	public void init() throws Throwable {
-		if (isInit()) {
-			throw new IllegalStateException("InvocationStubManager Has been initialized.");
-		}
-		injectInternal();
-		sInit = true;
+  public void init() throws Throwable {
+    if (isInit()) {
+      throw new IllegalStateException("InvocationStubManager Has been initialized.");
+    }
 
-	}
+    injectInternal();
+    sInit = true;
 
-	private void injectInternal() throws Throwable {
-		if (VirtualCore.get().isMainProcess()) {
-			return;
-		}
-		if (VirtualCore.get().isServerProcess()) {
-			addInjector(new ActivityManagerStub());
-			addInjector(new PackageManagerStub());
-			return;
-		}
-		if (VirtualCore.get().isVAppProcess()) {
-			addInjector(new LibCoreStub());
-			addInjector(new ActivityManagerStub());
-			addInjector(new PackageManagerStub());
-			addInjector(HCallbackStub.getDefault());
-			addInjector(new ISmsStub());
-			addInjector(new ISubStub());
-			addInjector(new DropBoxManagerStub());
-			addInjector(new NotificationManagerStub());
-			addInjector(new LocationManagerStub());
-			addInjector(new WindowManagerStub());
-			addInjector(new ClipBoardStub());
-			addInjector(new MountServiceStub());
-			addInjector(new BackupManagerStub());
-			addInjector(new TelephonyStub());
-			addInjector(new TelephonyRegistryStub());
-			addInjector(new PhoneSubInfoStub());
-			addInjector(new PowerManagerStub());
-			addInjector(new AppWidgetManagerStub());
-			addInjector(new AccountManagerStub());
-			addInjector(new AudioManagerStub());
-			addInjector(new SearchManagerStub());
-			addInjector(new ContentServiceStub());
-			addInjector(new ConnectivityStub());
+  }
 
-			if (Build.VERSION.SDK_INT >= JELLY_BEAN_MR2) {
-				addInjector(new VibratorStub());
-				addInjector(new WifiManagerStub());
-				addInjector(new BluetoothStub());
-				addInjector(new ContextHubServiceStub());
-			}
-			if (Build.VERSION.SDK_INT >= JELLY_BEAN_MR1) {
-				addInjector(new UserManagerStub());
-			}
+  private void injectInternal() throws Throwable {
+    if (VirtualCore.get().isMainProcess()) {
+      return;
+    }
 
-			if (Build.VERSION.SDK_INT >= JELLY_BEAN_MR1) {
-				addInjector(new DisplayStub());
-			}
-			if (Build.VERSION.SDK_INT >= LOLLIPOP) {
-				addInjector(new PersistentDataBlockServiceStub());
-				addInjector(new InputMethodManagerStub());
-				addInjector(new MmsStub());
-				addInjector(new SessionManagerStub());
-				addInjector(new JobServiceStub());
-				addInjector(new RestrictionStub());
-			}
-			if (Build.VERSION.SDK_INT >= KITKAT) {
-				addInjector(new AlarmManagerStub());
-				addInjector(new AppOpsManagerStub());
-				addInjector(new MediaRouterServiceStub());
-			}
-			if (Build.VERSION.SDK_INT >= LOLLIPOP_MR1) {
-				addInjector(new GraphicsStatsStub());
-				addInjector(new UsageStatsManagerStub());
-			}
-			if (Build.VERSION.SDK_INT >= M) {
-				addInjector(new FingerprintManagerStub());
-				addInjector(new NetworkManagementStub());
-			}
-			if (Build.VERSION.SDK_INT >= N) {
-                addInjector(new WifiScannerStub());
-                addInjector(new ShortcutServiceStub());
-                addInjector(new DevicePolicyManagerStub());
-            }
-            if (Build.VERSION.SDK_INT >= 26) {
-				addInjector(new AutoFillManagerStub());
-			}
-		}
-	}
+    if (VirtualCore.get().isServerProcess()) {
+      addInjector(new ActivityManagerStub());
+      addInjector(new PackageManagerStub());
+      return;
+    }
 
-	private void addInjector(IInjector IInjector) {
-		mInjectors.put(IInjector.getClass(), IInjector);
-	}
+    if (VirtualCore.get().isVAppProcess()) {
+      addInjector(new LibCoreStub());
+      addInjector(new ActivityManagerStub());
+      addInjector(new PackageManagerStub());
+      addInjector(HCallbackStub.getDefault());
+      addInjector(new ISmsStub());
+      addInjector(new ISubStub());
+      addInjector(new DropBoxManagerStub());
+      addInjector(new NotificationManagerStub());
+      addInjector(new LocationManagerStub());
+      addInjector(new WindowManagerStub());
+      addInjector(new ClipBoardStub());
+      addInjector(new MountServiceStub());
+      addInjector(new BackupManagerStub());
+      addInjector(new TelephonyStub());
+      addInjector(new TelephonyRegistryStub());
+      addInjector(new PhoneSubInfoStub());
+      addInjector(new PowerManagerStub());
+      addInjector(new AppWidgetManagerStub());
+      addInjector(new AccountManagerStub());
+      addInjector(new AudioManagerStub());
+      addInjector(new SearchManagerStub());
+      addInjector(new ContentServiceStub());
+      addInjector(new ConnectivityStub());
 
-	public <T extends IInjector> T findInjector(Class<T> clazz) {
-		// noinspection unchecked
-		return (T) mInjectors.get(clazz);
-	}
+      if (Build.VERSION.SDK_INT >= JELLY_BEAN_MR2) {
+        addInjector(new VibratorStub());
+        addInjector(new WifiManagerStub());
+        addInjector(new BluetoothStub());
+        addInjector(new ContextHubServiceStub());
+      }
 
-	public <T extends IInjector> void checkEnv(Class<T> clazz) {
-		IInjector IInjector = findInjector(clazz);
-		if (IInjector != null && IInjector.isEnvBad()) {
-			try {
-				IInjector.inject();
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
-		}
-	}
+      if (Build.VERSION.SDK_INT >= JELLY_BEAN_MR1) {
+        addInjector(new UserManagerStub());
+      }
 
-	public <T extends IInjector, H extends MethodInvocationStub> H getInvocationStub(Class<T> injectorClass) {
-		T injector = findInjector(injectorClass);
-		if (injector != null && injector instanceof MethodInvocationProxy) {
-			// noinspection unchecked
-			return (H) ((MethodInvocationProxy) injector).getInvocationStub();
-		}
-		return null;
-	}
+      if (Build.VERSION.SDK_INT >= JELLY_BEAN_MR1) {
+        addInjector(new DisplayStub());
+      }
+
+      if (Build.VERSION.SDK_INT >= LOLLIPOP) {
+        addInjector(new PersistentDataBlockServiceStub());
+        addInjector(new InputMethodManagerStub());
+        addInjector(new MmsStub());
+        addInjector(new SessionManagerStub());
+        addInjector(new JobServiceStub());
+        addInjector(new RestrictionStub());
+      }
+
+      if (Build.VERSION.SDK_INT >= KITKAT) {
+        addInjector(new AlarmManagerStub());
+        addInjector(new AppOpsManagerStub());
+        addInjector(new MediaRouterServiceStub());
+      }
+
+      if (Build.VERSION.SDK_INT >= LOLLIPOP_MR1) {
+        addInjector(new GraphicsStatsStub());
+        addInjector(new UsageStatsManagerStub());
+      }
+
+      if (Build.VERSION.SDK_INT >= M) {
+        addInjector(new FingerprintManagerStub());
+        addInjector(new NetworkManagementStub());
+      }
+
+      if (Build.VERSION.SDK_INT >= N) {
+        addInjector(new WifiScannerStub());
+        addInjector(new ShortcutServiceStub());
+        addInjector(new DevicePolicyManagerStub());
+      }
+
+      if (Build.VERSION.SDK_INT >= 26) {
+        addInjector(new AutoFillManagerStub());
+      }
+    }
+  }
+
+  private void addInjector(IInjector IInjector) {
+    mInjectors.put(IInjector.getClass(), IInjector);
+  }
+
+  public <T extends IInjector> T findInjector(Class<T> clazz) {
+    // noinspection unchecked
+    return (T) mInjectors.get(clazz);
+  }
+
+  public <T extends IInjector> void checkEnv(Class<T> clazz) {
+    IInjector IInjector = findInjector(clazz);
+    if (IInjector != null && IInjector.isEnvBad()) {
+      try {
+        IInjector.inject();
+      } catch (Throwable e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  public <T extends IInjector, H extends MethodInvocationStub> H getInvocationStub(Class<T> injectorClass) {
+    T injector = findInjector(injectorClass);
+    if (injector != null && injector instanceof MethodInvocationProxy) {
+      // noinspection unchecked
+      return (H) ((MethodInvocationProxy) injector).getInvocationStub();
+    }
+    return null;
+  }
 
 }
