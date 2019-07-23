@@ -290,7 +290,6 @@ public class VAppManagerService implements IAppManager {
     return res;
   }
 
-
   @Override
   public synchronized boolean installPackageAsUser(int userId, String packageName) {
     if (VUserManagerService.get().exists(userId)) {
@@ -313,6 +312,7 @@ public class VAppManagerService implements IAppManager {
         if (FileUtils.isSymlink(packageFile)) {
           return;
         }
+
         FileUtils.chmod(packageFile.getParentFile().getAbsolutePath(), FileUtils.FileMode.MODE_755);
         FileUtils.chmod(packageFile.getAbsolutePath(), FileUtils.FileMode.MODE_755);
       }

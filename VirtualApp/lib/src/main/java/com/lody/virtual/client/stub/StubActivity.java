@@ -29,7 +29,8 @@ public abstract class StubActivity extends Activity {
         // Try to acquire the actually component information.
 		StubActivityRecord r = new StubActivityRecord(stubIntent);
 		if (r.intent != null) {
-			if (TextUtils.equals(r.info.processName, VirtualRuntime.getProcessName()) && r.userId == VUserHandle.myUserId()) {
+			if (TextUtils.equals(r.info.processName, VirtualRuntime.getProcessName()) &&
+					r.userId == VUserHandle.myUserId()) {
                 // Retry to inject the HCallback to instead of the exist one.
 				InvocationStubManager.getInstance().checkEnv(HCallbackStub.class);
 				Intent intent = r.intent;
