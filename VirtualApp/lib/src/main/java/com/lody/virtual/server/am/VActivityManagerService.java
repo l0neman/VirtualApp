@@ -883,6 +883,7 @@ public class VActivityManagerService implements IActivityManager {
         synchronized (mProcessNames) {
             ArrayMap<String, SparseArray<ProcessRecord>> map = mProcessNames.getMap();
             int N = map.size();
+
             while (N-- > 0) {
                 SparseArray<ProcessRecord> uids = map.valueAt(N);
                 for (int i = 0; i < uids.size(); i++) {
@@ -892,6 +893,7 @@ public class VActivityManagerService implements IActivityManager {
                             continue;
                         }
                     }
+
                     if (r.pkgList.contains(pkg)) {
                         killProcess(r.pid);
                     }
