@@ -158,6 +158,7 @@ public class VAppManagerService implements IAppManager {
     // 保存应用包信息。
     VPackage pkg = null;
     try {
+      // 构建可序列化的包信息。
       pkg = PackageParserEx.parsePackage(packageFile);
     } catch (Throwable e) {
       e.printStackTrace();
@@ -173,7 +174,9 @@ public class VAppManagerService implements IAppManager {
     // 查询已安装的应用包。
     // PackageCache holds all packages, try to check if we need to update.
     VPackage existOne = PackageCacheManager.get(pkg.packageName);
-    PackageSetting existSetting = existOne != null ? (PackageSetting) existOne.mExtras : null;
+    PackageSetting existSetting = existOne != null ?
+        (PackageSetting) existOne.mExtras : null;
+
     if (existOne != null) {
       if ((flags & InstallStrategy.IGNORE_NEW_VERSION) != 0) {
         res.isUpdate = true;

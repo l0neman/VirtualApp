@@ -71,36 +71,43 @@ public class VPackage implements Parcelable {
         while (N-- > 0) {
             activities.add(new ActivityComponent(in));
         }
+
         N = in.readInt();
         this.receivers = new ArrayList<>(N);
         while (N-- > 0) {
             receivers.add(new ActivityComponent(in));
         }
+
         N = in.readInt();
         this.providers = new ArrayList<>(N);
         while (N-- > 0) {
             providers.add(new ProviderComponent(in));
         }
+
         N = in.readInt();
         this.services = new ArrayList<>(N);
         while (N-- > 0) {
             services.add(new ServiceComponent(in));
         }
+
         N = in.readInt();
         this.instrumentation = new ArrayList<>(N);
         while (N-- > 0) {
             instrumentation.add(new InstrumentationComponent(in));
         }
+
         N = in.readInt();
         this.permissions = new ArrayList<>(N);
         while (N-- > 0) {
             permissions.add(new PermissionComponent(in));
         }
+
         N = in.readInt();
         this.permissionGroups = new ArrayList<>(N);
         while (N-- > 0) {
             permissionGroups.add(new PermissionGroupComponent(in));
         }
+
         this.requestedPermissions = in.createStringArrayList();
         this.protectedBroadcasts = in.createStringArrayList();
         this.applicationInfo = in.readParcelable(ApplicationInfo.class.getClassLoader());
@@ -135,6 +142,7 @@ public class VPackage implements Parcelable {
                 }
             }
         }
+
         dest.writeInt(this.receivers.size());
         for (ActivityComponent component : receivers) {
             dest.writeParcelable(component.info, 0);
@@ -147,6 +155,7 @@ public class VPackage implements Parcelable {
                 }
             }
         }
+
         dest.writeInt(this.providers.size());
         for (ProviderComponent component : providers) {
             dest.writeParcelable(component.info, 0);
@@ -159,6 +168,7 @@ public class VPackage implements Parcelable {
                 }
             }
         }
+
         dest.writeInt(this.services.size());
         for (ServiceComponent component : services) {
             dest.writeParcelable(component.info, 0);
@@ -171,6 +181,7 @@ public class VPackage implements Parcelable {
                 }
             }
         }
+
         dest.writeInt(this.instrumentation.size());
         for (InstrumentationComponent component : instrumentation) {
             dest.writeParcelable(component.info, 0);
@@ -183,6 +194,7 @@ public class VPackage implements Parcelable {
                 }
             }
         }
+
         dest.writeInt(this.permissions.size());
         for (PermissionComponent component : permissions) {
             dest.writeParcelable(component.info, 0);
@@ -207,6 +219,7 @@ public class VPackage implements Parcelable {
                 }
             }
         }
+
         dest.writeStringList(this.requestedPermissions);
         dest.writeStringList(this.protectedBroadcasts);
         dest.writeParcelable(this.applicationInfo, flags);
@@ -341,10 +354,12 @@ public class VPackage implements Parcelable {
             if (componentName != null) {
                 return componentName;
             }
+
             if (className != null) {
                 componentName = new ComponentName(owner.packageName,
                         className);
             }
+
             return componentName;
         }
 
@@ -361,6 +376,7 @@ public class VPackage implements Parcelable {
                     intents.add(new ActivityIntentInfo((PackageParser.IntentInfo) o));
                 }
             }
+
             info = activity.info;
         }
 
@@ -387,6 +403,7 @@ public class VPackage implements Parcelable {
                     intents.add(new ServiceIntentInfo((PackageParser.IntentInfo) o));
                 }
             }
+
             this.info = service.info;
         }
 
@@ -413,6 +430,7 @@ public class VPackage implements Parcelable {
                     intents.add(new ProviderIntentInfo((PackageParser.IntentInfo) o));
                 }
             }
+
             this.info = provider.info;
         }
 
