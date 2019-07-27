@@ -810,10 +810,9 @@ public class VAccountManagerService implements IAccountManager {
         AuthTokenRecord one = iterator.next();
         if (one.expiryEpochMillis > 0 && one.expiryEpochMillis < now) {
           iterator.remove();
-        } else
-          if (record.equals(one)) {
-            authToken = record.authToken;
-          }
+        } else if (record.equals(one)) {
+          authToken = record.authToken;
+        }
       }
     }
     return authToken;
@@ -919,38 +918,48 @@ public class VAccountManagerService implements IAccountManager {
   private void readAllAccounts() {
     File accountFile = VEnvironment.getAccountConfigFile();
     refreshAuthenticatorCache(null);
+
     if (accountFile.exists()) {
       accountsByUserId.clear();
       Parcel dest = Parcel.obtain();
+
       try {
         FileInputStream is = new FileInputStream(accountFile);
         byte[] bytes = new byte[(int) accountFile.length()];
         int readLength = is.read(bytes);
         is.close();
+
         if (readLength != bytes.length) {
           throw new IOException(String.format(Locale.ENGLISH, "Expect length %d, but got %d.", bytes.length, readLength));
         }
+
         dest.unmarshall(bytes, 0, bytes.length);
         dest.setDataPosition(0);
         dest.readInt(); // skip the magic
         int size = dest.readInt(); // the VAccount's size we need to read
         boolean invalid = false;
+
         while (size-- > 0) {
           VAccount account = new VAccount(dest);
           VLog.d(TAG, "Reading account : " + account.type);
           AuthenticatorInfo info = cache.authenticators.get(account.type);
+
           if (info != null) {
             List<VAccount> accounts = accountsByUserId.get(account.userId);
+
             if (accounts == null) {
               accounts = new ArrayList<>();
               accountsByUserId.put(account.userId, accounts);
             }
+
             accounts.add(account);
           } else {
             invalid = true;
           }
         }
+
         lastAccountChangeTime = dest.readLong();
+
         if (invalid) {
           saveAllAccounts();
         }
@@ -993,13 +1002,16 @@ public class VAccountManagerService implements IAccountManager {
     for (ResolveInfo info : services) {
       XmlResourceParser parser = accountParser.getParser(mContext, info.serviceInfo,
           AccountManager.AUTHENTICATOR_META_DATA_NAME);
+
       if (parser != null) {
         try {
           AttributeSet attributeSet = Xml.asAttributeSet(parser);
           int type;
+
           while ((type = parser.next()) != XmlPullParser.END_DOCUMENT && type != XmlPullParser.START_TAG) {
             // Nothing to do
           }
+
           if (AccountManager.AUTHENTICATOR_ATTRIBUTES_NAME.equals(parser.getName())) {
             AuthenticatorDescription desc = parseAuthenticatorDescription(
                 accountParser.getResources(mContext, info.serviceInfo.applicationInfo),

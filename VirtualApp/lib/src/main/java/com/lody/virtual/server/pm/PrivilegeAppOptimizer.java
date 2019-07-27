@@ -54,9 +54,11 @@ public class PrivilegeAppOptimizer {
         if (!isPrivilegeApp(packageName)) {
             return false;
         }
+
         VActivityManagerService.get().sendBroadcastAsUser(
                 specifyApp(new Intent(Intent.ACTION_BOOT_COMPLETED, null), packageName, userId)
                 , new VUserHandle(userId));
+
         return true;
     }
 

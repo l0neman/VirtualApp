@@ -105,6 +105,7 @@ public class VActivityManagerService implements IActivityManager {
                 return serviceInfo;
             }
         }
+
         return null;
     }
 
@@ -114,7 +115,8 @@ public class VActivityManagerService implements IActivityManager {
         PackageInfo packageInfo = null;
         try {
             packageInfo = pm.getPackageInfo(context.getPackageName(),
-                    PackageManager.GET_ACTIVITIES | PackageManager.GET_PROVIDERS | PackageManager.GET_META_DATA);
+                    PackageManager.GET_ACTIVITIES | PackageManager.GET_PROVIDERS |
+                        PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -122,6 +124,7 @@ public class VActivityManagerService implements IActivityManager {
         if (packageInfo == null) {
             throw new RuntimeException("Unable to found PackageInfo : " + context.getPackageName());
         }
+
         sService.set(this);
 
     }

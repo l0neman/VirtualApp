@@ -1,6 +1,8 @@
 package com.lody.virtual.client.core;
 
+import android.content.Context;
 import android.os.Build;
+import android.system.Os;
 
 import com.lody.virtual.client.hook.base.MethodInvocationProxy;
 import com.lody.virtual.client.hook.base.MethodInvocationStub;
@@ -114,27 +116,45 @@ public final class InvocationStubManager {
     }
 
     if (VirtualCore.get().isServerProcess()) {
+
+      // hook ActivityManager，将对 Context.ACTIVITY_SERVICE 和 startActivity 造成影响。
       addInjector(new ActivityManagerStub());
+      // hook PackageManager，将对 context.getPackageManager() 造成影响。
       addInjector(new PackageManagerStub());
       return;
     }
 
     if (VirtualCore.get().isVAppProcess()) {
+      // hook Os，将对 Os.chmod Os.fchown 等造成影响。
       addInjector(new LibCoreStub());
       addInjector(new ActivityManagerStub());
       addInjector(new PackageManagerStub());
+      // hook ActivityThread$H 类，将影响系统对 startActivity 的处理。
       addInjector(HCallbackStub.getDefault());
+
+      // hook SmsManager，将影响短信发送功能。
       addInjector(new ISmsStub());
+      // hook SubscriptionManager，影响 sim 卡信息。
       addInjector(new ISubStub());
+      // hook DropBoxManager，影响日志内容获取。
       addInjector(new DropBoxManagerStub());
+      // hook NotificationManager，影响通知的发送。
       addInjector(new NotificationManagerStub());
+      // hook LocationManager，影响位置信息获取。
       addInjector(new LocationManagerStub());
+      // hook WindowManager.
       addInjector(new WindowManagerStub());
+      // hook ClipboardManager。影响剪贴板信息。
       addInjector(new ClipBoardStub());
+      // hook StorageManager，影响 Obb 数据存储。
       addInjector(new MountServiceStub());
+      // hook BackupManager，影响备份功能。
       addInjector(new BackupManagerStub());
+      // hook TelephonyManager，影响电话相关功能。
       addInjector(new TelephonyStub());
+      // hook TelephonyRegistry。
       addInjector(new TelephonyRegistryStub());
+      // hook PhoneSubInfoController。
       addInjector(new PhoneSubInfoStub());
       addInjector(new PowerManagerStub());
       addInjector(new AppWidgetManagerStub());

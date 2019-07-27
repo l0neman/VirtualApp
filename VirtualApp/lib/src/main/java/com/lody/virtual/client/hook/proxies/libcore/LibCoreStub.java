@@ -1,5 +1,7 @@
 package com.lody.virtual.client.hook.proxies.libcore;
 
+import android.system.Os;
+
 import com.lody.virtual.client.hook.base.MethodInvocationStub;
 import com.lody.virtual.client.hook.base.Inject;
 import com.lody.virtual.client.hook.base.MethodInvocationProxy;

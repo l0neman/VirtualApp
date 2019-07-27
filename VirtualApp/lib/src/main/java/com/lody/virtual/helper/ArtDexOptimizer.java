@@ -42,6 +42,7 @@ public class ArtDexOptimizer {
         commandAndParams.add("--dex-file=" + dexFilePath);
         commandAndParams.add("--oat-file=" + oatFilePath);
         commandAndParams.add("--instruction-set=" + VMRuntime.getCurrentInstructionSet.call());
+
         if (Build.VERSION.SDK_INT > 25) {
             commandAndParams.add("--compiler-filter=quicken");
         } else {
@@ -49,10 +50,14 @@ public class ArtDexOptimizer {
         }
 
         final ProcessBuilder pb = new ProcessBuilder(commandAndParams);
+
         pb.redirectErrorStream(true);
+
         final Process dex2oatProcess = pb.start();
+
         StreamConsumer.consumeInputStream(dex2oatProcess.getInputStream());
         StreamConsumer.consumeInputStream(dex2oatProcess.getErrorStream());
+
         try {
             final int ret = dex2oatProcess.waitFor();
             if (ret != 0) {

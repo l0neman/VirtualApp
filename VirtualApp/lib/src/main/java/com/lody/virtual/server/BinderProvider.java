@@ -56,26 +56,46 @@ public final class BinderProvider extends ContentProvider {
       return true;
     }
 
+    // 1. 包管理服务。
     VPackageManagerService.systemReady();
     IPCBus.register(IPackageManager.class, VPackageManagerService.get());
+
+    // 2. 活动管理服务。
     VActivityManagerService.systemReady(context);
     IPCBus.register(IActivityManager.class, VActivityManagerService.get());
+
+    // 3. 用户管理服务。
     IPCBus.register(IUserManager.class, VUserManagerService.get());
+
+    // 4. 应用管理服务。
     VAppManagerService.systemReady();
     IPCBus.register(IAppManager.class, VAppManagerService.get());
+
+    // 5. 广播管理。
     BroadcastSystem.attach(VActivityManagerService.get(), VAppManagerService.get());
 
+    // 6. 工作调度服务。
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       IPCBus.register(IJobService.class, VJobSchedulerService.get());
     }
 
+    // 7. 通知管理服务。
     VNotificationManagerService.systemReady(context);
     IPCBus.register(INotificationManager.class, VNotificationManagerService.get());
+
     VAppManagerService.get().scanApps();
+
+    // 8. 账户管理服务。
     VAccountManagerService.systemReady();
     IPCBus.register(IAccountManager.class, VAccountManagerService.get());
+
+    // 9. 虚拟存储服务。
     IPCBus.register(IVirtualStorageService.class, VirtualStorageService.get());
+
+    // 10. 设备信息服务。
     IPCBus.register(IDeviceInfoManager.class, VDeviceManagerService.get());
+
+    // 11. 虚拟定位服务。
     IPCBus.register(IVirtualLocationManager.class, VirtualLocationService.get());
 
     return true;

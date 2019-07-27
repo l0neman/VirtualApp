@@ -74,10 +74,13 @@ public class VAppManagerService implements IAppManager {
     if (mBooting) {
       return;
     }
+
     synchronized (this) {
       mBooting = true;
+
       mPersistenceLayer.read();
       PrivilegeAppOptimizer.get().performOptimizeAllApps();
+
       mBooting = false;
     }
   }
@@ -174,8 +177,7 @@ public class VAppManagerService implements IAppManager {
     // 查询已安装的应用包。
     // PackageCache holds all packages, try to check if we need to update.
     VPackage existOne = PackageCacheManager.get(pkg.packageName);
-    PackageSetting existSetting = existOne != null ?
-        (PackageSetting) existOne.mExtras : null;
+    PackageSetting existSetting = existOne != null ? (PackageSetting) existOne.mExtras : null;
 
     if (existOne != null) {
       // 忽略更新安装。
@@ -297,6 +299,7 @@ public class VAppManagerService implements IAppManager {
 
     // 初始化应用程序广播。
     BroadcastSystem.get().startApp(pkg);
+
     if (notify) {
       // 通知安装结果。
       notifyAppInstalled(ps, -1);
@@ -310,6 +313,7 @@ public class VAppManagerService implements IAppManager {
   public synchronized boolean installPackageAsUser(int userId, String packageName) {
     if (VUserManagerService.get().exists(userId)) {
       PackageSetting ps = PackageCacheManager.getSetting(packageName);
+
       if (ps != null) {
         if (!ps.isInstalled(userId)) {
           ps.setInstalled(userId, true);
@@ -319,6 +323,7 @@ public class VAppManagerService implements IAppManager {
         }
       }
     }
+
     return false;
   }
 
@@ -468,16 +473,19 @@ public class VAppManagerService implements IAppManager {
     if (packageName == null || !VUserManagerService.get().exists(userId)) {
       return false;
     }
+
     PackageSetting setting = PackageCacheManager.getSetting(packageName);
     if (setting == null) {
       return false;
     }
+
     return setting.isInstalled(userId);
   }
 
   private void notifyAppInstalled(PackageSetting setting, int userId) {
     final String pkg = setting.packageName;
     int N = mRemoteCallbackList.beginBroadcast();
+
     while (N-- > 0) {
       try {
         if (userId == -1) {
@@ -492,6 +500,7 @@ public class VAppManagerService implements IAppManager {
         e.printStackTrace();
       }
     }
+
     mRemoteCallbackList.finishBroadcast();
     VAccountManagerService.get().refreshAuthenticatorCache(null);
   }

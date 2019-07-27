@@ -1,6 +1,7 @@
 package com.lody.virtual.client.hook.proxies.isms;
 
 import android.os.Build;
+import android.telephony.SmsManager;
 
 import com.lody.virtual.client.hook.base.BinderInvocationProxy;
 import com.lody.virtual.client.hook.base.ReplaceCallingPkgMethodProxy;
@@ -22,6 +23,7 @@ public class ISmsStub extends BinderInvocationProxy {
     protected void onBindMethods() {
         super.onBindMethods();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
             addMethodProxy(new ReplaceSpecPkgMethodProxy("getAllMessagesFromIccEfForSubscriber", 1));
             addMethodProxy(new ReplaceSpecPkgMethodProxy("updateMessageOnIccEfForSubscriber", 1));
             addMethodProxy(new ReplaceSpecPkgMethodProxy("copyMessageToIccEfForSubscriber", 1));
@@ -32,6 +34,7 @@ public class ISmsStub extends BinderInvocationProxy {
             addMethodProxy(new ReplaceSpecPkgMethodProxy("sendMultipartTextForSubscriber", 1));
             addMethodProxy(new ReplaceSpecPkgMethodProxy("sendStoredText", 1));
             addMethodProxy(new ReplaceSpecPkgMethodProxy("sendStoredMultipartText", 1));
+
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             addMethodProxy(new ReplaceCallingPkgMethodProxy("getAllMessagesFromIccEf"));
             addMethodProxy(new ReplaceSpecPkgMethodProxy("getAllMessagesFromIccEfForSubscriber", 1));
@@ -47,13 +50,16 @@ public class ISmsStub extends BinderInvocationProxy {
             addMethodProxy(new ReplaceSpecPkgMethodProxy("sendMultipartTextForSubscriber", 1));
             addMethodProxy(new ReplaceSpecPkgMethodProxy("sendStoredText", 1));
             addMethodProxy(new ReplaceSpecPkgMethodProxy("sendStoredMultipartText", 1));
+
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+
             addMethodProxy(new ReplaceCallingPkgMethodProxy("getAllMessagesFromIccEf"));
             addMethodProxy(new ReplaceCallingPkgMethodProxy("updateMessageOnIccEf"));
             addMethodProxy(new ReplaceCallingPkgMethodProxy("copyMessageToIccEf"));
             addMethodProxy(new ReplaceCallingPkgMethodProxy("sendData"));
             addMethodProxy(new ReplaceCallingPkgMethodProxy("sendText"));
             addMethodProxy(new ReplaceCallingPkgMethodProxy("sendMultipartText"));
+
         }
     }
 }
