@@ -158,6 +158,7 @@ public class VAppManagerService implements IAppManager {
     // 保存应用包信息。
     VPackage pkg = null;
     try {
+      // 构建可序列化的包信息。
       pkg = PackageParserEx.parsePackage(packageFile);
     } catch (Throwable e) {
       e.printStackTrace();
@@ -173,8 +174,11 @@ public class VAppManagerService implements IAppManager {
     // 查询已安装的应用包。
     // PackageCache holds all packages, try to check if we need to update.
     VPackage existOne = PackageCacheManager.get(pkg.packageName);
-    PackageSetting existSetting = existOne != null ? (PackageSetting) existOne.mExtras : null;
+    PackageSetting existSetting = existOne != null ?
+        (PackageSetting) existOne.mExtras : null;
+
     if (existOne != null) {
+      // 忽略更新安装。
       if ((flags & InstallStrategy.IGNORE_NEW_VERSION) != 0) {
         res.isUpdate = true;
         return res;
@@ -187,9 +191,11 @@ public class VAppManagerService implements IAppManager {
       res.isUpdate = true;
     }
 
+    // /data/data/xxx.xxx.va/virtual/data/app/xxx.xxx.client
     File appDir = VEnvironment.getDataAppPackageDirectory(pkg.packageName);
     File libDir = new File(appDir, "lib");
 
+    // 更新预处理，删除 lib，odex，关闭进程。
     if (res.isUpdate) {
       FileUtils.deleteDir(libDir);
       VEnvironment.getOdexFile(pkg.packageName).delete();
@@ -200,8 +206,8 @@ public class VAppManagerService implements IAppManager {
       return InstallResult.makeFailure("Unable to create lib dir.");
     }
 
-    boolean dependSystem = (flags & InstallStrategy.DEPEND_SYSTEM_IF_EXIST) != 0
-        && VirtualCore.get().isOutsideInstalled(pkg.packageName);
+    boolean dependSystem = (flags & InstallStrategy.DEPEND_SYSTEM_IF_EXIST) != 0 &&
+        VirtualCore.get().isOutsideInstalled(pkg.packageName);
 
     if (existSetting != null && existSetting.dependSystem) {
       dependSystem = false;
@@ -211,11 +217,13 @@ public class VAppManagerService implements IAppManager {
     if (!dependSystem) {
       File privatePackageFile = new File(appDir, "base.apk");
       File parentFolder = privatePackageFile.getParentFile();
+
       if (!parentFolder.exists() && !parentFolder.mkdirs()) {
         VLog.w(TAG, "Warning: unable to create folder : " + privatePackageFile.getPath());
-      } else if (privatePackageFile.exists() && !privatePackageFile.delete()) {
-        VLog.w(TAG, "Warning: unable to delete file : " + privatePackageFile.getPath());
-      }
+      } else
+        if (privatePackageFile.exists() && !privatePackageFile.delete()) {
+          VLog.w(TAG, "Warning: unable to delete file : " + privatePackageFile.getPath());
+        }
 
       try {
         FileUtils.copyFile(packageFile, privatePackageFile);
@@ -232,6 +240,7 @@ public class VAppManagerService implements IAppManager {
     }
 
     chmodPackageDictionary(packageFile);
+
     PackageSetting ps;
     if (existSetting != null) {
       ps = existSetting;
@@ -244,19 +253,24 @@ public class VAppManagerService implements IAppManager {
     ps.libPath = libDir.getPath();
     ps.packageName = pkg.packageName;
     ps.appId = VUserHandle.getAppId(mUidSystem.getOrCreateUid(pkg));
+
     if (res.isUpdate) {
       ps.lastUpdateTime = installTime;
     } else {
       ps.firstInstallTime = installTime;
       ps.lastUpdateTime = installTime;
+
       for (int userId : VUserManagerService.get().getUserIds()) {
         boolean installed = userId == 0;
         ps.setUserState(userId, false/*launched*/, false/*hidden*/, installed);
       }
     }
 
+    // 持久化存储包信息。
     PackageParserEx.savePackageCache(pkg);
+    // 保存安装信息。
     PackageCacheManager.put(pkg, ps);
+    // 持久化存储包设置信息。
     mPersistenceLayer.save();
 
     if (!dependSystem) {
@@ -281,8 +295,10 @@ public class VAppManagerService implements IAppManager {
       }
     }
 
+    // 初始化应用程序广播。
     BroadcastSystem.get().startApp(pkg);
     if (notify) {
+      // 通知安装结果。
       notifyAppInstalled(ps, -1);
     }
 
