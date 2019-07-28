@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Lody
  * <p>
  * HookHandler uses Java's {@link Proxy} to create a wrapper for existing services.
  * <p>
@@ -23,6 +22,8 @@ import java.util.Map;
  * and enabled for that method. If so, it calls the startUniformer instead of the wrapped implementation.
  * <p>
  * The whole thing is managed by a {@link MethodInvocationProxy} subclass
+ *
+ * @author Lody
  */
 @SuppressWarnings("unchecked")
 public class MethodInvocationStub<T> {
@@ -47,6 +48,7 @@ public class MethodInvocationStub<T> {
       if (proxyInterfaces == null) {
         proxyInterfaces = MethodParameterUtils.getAllInterface(baseInterface.getClass());
       }
+
       mProxyInterface = (T) Proxy.newProxyInstance(baseInterface.getClass().getClassLoader(), proxyInterfaces, new HookInvocationHandler());
     } else {
       VLog.d(TAG, "Unable to build HookDelegate: %s.", getIdentityName());

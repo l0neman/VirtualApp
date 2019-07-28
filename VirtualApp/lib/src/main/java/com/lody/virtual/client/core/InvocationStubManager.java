@@ -132,7 +132,7 @@ public final class InvocationStubManager {
       // hook ActivityThread$H 类，将影响系统对 startActivity 的处理。
       addInjector(HCallbackStub.getDefault());
 
-      // hook SmsManager，将影响短信发送功能。
+      // hook SmsManager，影响短信发送功能。
       addInjector(new ISmsStub());
       // hook SubscriptionManager，影响 sim 卡信息。
       addInjector(new ISubStub());
@@ -156,57 +156,85 @@ public final class InvocationStubManager {
       addInjector(new TelephonyRegistryStub());
       // hook PhoneSubInfoController。
       addInjector(new PhoneSubInfoStub());
+      // hook PowerManager，影响电源相关功能。
       addInjector(new PowerManagerStub());
+      // hook AppWidgetManager，影响小部件相关信息。
       addInjector(new AppWidgetManagerStub());
+      // hook AccountManager，影响账号相关信息。
       addInjector(new AccountManagerStub());
+      // hook AudioManager，将影响音量震动控制功能。
       addInjector(new AudioManagerStub());
+      // hook SearchManager，影响搜索功能。
       addInjector(new SearchManagerStub());
+      // hook ContentService，影响数据更新相关。
       addInjector(new ContentServiceStub());
+      // hook ConnectivityManager，影响网络状态状态。
       addInjector(new ConnectivityStub());
 
       if (Build.VERSION.SDK_INT >= JELLY_BEAN_MR2) {
+        // hook Vibrator，影响震动控制。
         addInjector(new VibratorStub());
+        // hook WifiManager，影响 wifi 链接服务。
         addInjector(new WifiManagerStub());
+        // hook BluetoothManager，影响蓝牙服务。
         addInjector(new BluetoothStub());
+        // hook ContextHubManager。
         addInjector(new ContextHubServiceStub());
       }
 
+      // hook UserManager，影响多用户功能。
       if (Build.VERSION.SDK_INT >= JELLY_BEAN_MR1) {
         addInjector(new UserManagerStub());
       }
 
+      // hook DisplayManagerGlobal。
       if (Build.VERSION.SDK_INT >= JELLY_BEAN_MR1) {
         addInjector(new DisplayStub());
       }
 
       if (Build.VERSION.SDK_INT >= LOLLIPOP) {
+        // hook PersistentDataBlockService，持久数据。
         addInjector(new PersistentDataBlockServiceStub());
+        // hook InputMethodManager，影响输入法。
         addInjector(new InputMethodManagerStub());
+        // hook IMms。
         addInjector(new MmsStub());
+        // hook MediaSessionManager，音频相关。
         addInjector(new SessionManagerStub());
+        // hook JobScheduler，工作调度。
         addInjector(new JobServiceStub());
+        // hook RestrictionsManager。
         addInjector(new RestrictionStub());
       }
 
       if (Build.VERSION.SDK_INT >= KITKAT) {
+        // hook AlarmManager，闹钟服务。
         addInjector(new AlarmManagerStub());
+        // hook AppOpsManager，动态权限相关。
         addInjector(new AppOpsManagerStub());
+        // hook MediaRouter，路由器选择。
         addInjector(new MediaRouterServiceStub());
       }
 
       if (Build.VERSION.SDK_INT >= LOLLIPOP_MR1) {
+        // hook GraphicsStatsService。
         addInjector(new GraphicsStatsStub());
+        // hook UsageStatsManager，影响最近使用应用信息。
         addInjector(new UsageStatsManagerStub());
       }
 
       if (Build.VERSION.SDK_INT >= M) {
+        // hook FingerprintService，指纹功能。
         addInjector(new FingerprintManagerStub());
+        // hook NetworkManagementService。
         addInjector(new NetworkManagementStub());
       }
 
       if (Build.VERSION.SDK_INT >= N) {
         addInjector(new WifiScannerStub());
+        // hook LauncherApps，影响快捷方式创建。
         addInjector(new ShortcutServiceStub());
+        // hook DevicePolicyManager。
         addInjector(new DevicePolicyManagerStub());
       }
 

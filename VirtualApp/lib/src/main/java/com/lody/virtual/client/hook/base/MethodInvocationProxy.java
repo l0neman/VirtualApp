@@ -43,6 +43,7 @@ public abstract class MethodInvocationProxy<T extends MethodInvocationStub> impl
       return;
     }
 
+    // 将 Inject 注解内的类的所有内部类插入。
     Class<? extends MethodInvocationProxy> clazz = getClass();
     Inject inject = clazz.getAnnotation(Inject.class);
 
