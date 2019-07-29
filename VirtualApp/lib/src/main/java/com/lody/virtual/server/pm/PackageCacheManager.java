@@ -20,9 +20,13 @@ public class PackageCacheManager {
 
     public static void put(VPackage pkg, PackageSetting ps) {
         synchronized (PackageCacheManager.class) {
+            // 填充 pkg 的 applicationInfo 信息。
             PackageParserEx.initApplicationInfoBase(ps, pkg);
+
             PACKAGE_CACHE.put(pkg.packageName, pkg);
             pkg.mExtras = ps;
+
+            // 解析并存储四大组件信息。
             VPackageManagerService.get().analyzePackageLocked(pkg);
         }
     }

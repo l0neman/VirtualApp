@@ -186,6 +186,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
             ActivityManager.RECENT_WITH_EXCLUDED | ActivityManager.RECENT_IGNORE_UNAVAILABLE));
 
     int N = mHistory.size();
+
     while (N-- > 0) {
       TaskRecord task = mHistory.valueAt(N);
       ListIterator<ActivityManager.RecentTaskInfo> iterator = recentTask.listIterator();

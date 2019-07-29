@@ -90,11 +90,14 @@ public abstract class IntentResolver<F extends VPackage.IntentInfo, R extends Ob
 	public void addFilter(F f) {
 
 		mFilters.add(f);
+
 		int numS = register_intent_filter(f, f.filter.schemesIterator(), mSchemeToFilter, "      Scheme: ");
 		int numT = register_mime_types(f, "      Type: ");
+
 		if (numS == 0 && numT == 0) {
 			register_intent_filter(f, f.filter.actionsIterator(), mActionToFilter, "      Action: ");
 		}
+
 		if (numT != 0) {
 			register_intent_filter(f, f.filter.actionsIterator(), mTypedActionToFilter, "      TypedAction: ");
 		}

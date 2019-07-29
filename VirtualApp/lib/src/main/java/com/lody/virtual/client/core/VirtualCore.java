@@ -579,7 +579,9 @@ public final class VirtualCore {
   public synchronized ActivityInfo resolveActivityInfo(Intent intent, int userId) {
     ActivityInfo activityInfo = null;
     if (intent.getComponent() == null) {
-      ResolveInfo resolveInfo = VPackageManager.get().resolveIntent(intent, intent.getType(), 0, userId);
+      ResolveInfo resolveInfo = VPackageManager.get().resolveIntent(intent, intent.getType(),
+          0, userId);
+
       if (resolveInfo != null && resolveInfo.activityInfo != null) {
         activityInfo = resolveInfo.activityInfo;
         intent.setClassName(activityInfo.packageName, activityInfo.name);
@@ -587,6 +589,7 @@ public final class VirtualCore {
     } else {
       activityInfo = resolveActivityInfo(intent.getComponent(), userId);
     }
+
     if (activityInfo != null) {
       if (activityInfo.targetActivity != null) {
         ComponentName componentName = new ComponentName(activityInfo.packageName, activityInfo.targetActivity);
@@ -594,6 +597,7 @@ public final class VirtualCore {
         intent.setComponent(componentName);
       }
     }
+
     return activityInfo;
   }
 

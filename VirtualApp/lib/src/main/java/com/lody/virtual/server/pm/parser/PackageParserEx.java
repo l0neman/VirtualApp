@@ -209,12 +209,14 @@ public class PackageParserEx {
     if (TextUtils.isEmpty(ai.processName)) {
       ai.processName = ai.packageName;
     }
+
     ai.enabled = true;
     ai.nativeLibraryDir = ps.libPath;
     ai.uid = ps.appId;
     ai.name = ComponentFixer.fixComponentClassName(ps.packageName, ai.name);
     ai.publicSourceDir = ps.apkPath;
     ai.sourceDir = ps.apkPath;
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       ai.splitSourceDirs = new String[]{ps.apkPath};
       ai.splitPublicSourceDirs = ai.splitSourceDirs;
@@ -228,30 +230,37 @@ public class PackageParserEx {
       String[] sharedLibraryFiles = sSharedLibCache.get(ps.packageName);
       if (sharedLibraryFiles == null) {
         PackageManager hostPM = VirtualCore.get().getUnHookPackageManager();
+
         try {
           ApplicationInfo hostInfo = hostPM.getApplicationInfo(ps.packageName, PackageManager.GET_SHARED_LIBRARY_FILES);
           sharedLibraryFiles = hostInfo.sharedLibraryFiles;
+
           if (sharedLibraryFiles == null) sharedLibraryFiles = new String[0];
+
           sSharedLibCache.put(ps.packageName, sharedLibraryFiles);
         } catch (PackageManager.NameNotFoundException e) {
           e.printStackTrace();
         }
       }
+
       ai.sharedLibraryFiles = sharedLibraryFiles;
     }
   }
 
   private static void initApplicationAsUser(ApplicationInfo ai, int userId) {
     ai.dataDir = VEnvironment.getDataUserPackageDirectory(userId, ai.packageName).getPath();
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       ApplicationInfoL.scanSourceDir.set(ai, ai.dataDir);
       ApplicationInfoL.scanPublicSourceDir.set(ai, ai.dataDir);
     }
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       if (Build.VERSION.SDK_INT < 26) {
         ApplicationInfoN.deviceEncryptedDataDir.set(ai, ai.dataDir);
         ApplicationInfoN.credentialEncryptedDataDir.set(ai, ai.dataDir);
       }
+
       ApplicationInfoN.deviceProtectedDataDir.set(ai, ai.dataDir);
       ApplicationInfoN.credentialProtectedDataDir.set(ai, ai.dataDir);
     }
@@ -418,15 +427,19 @@ public class PackageParserEx {
   public static ActivityInfo generateActivityInfo(VPackage.ActivityComponent a, int flags,
                                                   PackageUserState state, int userId) {
     if (a == null) return null;
+
     if (!checkUseInstalledOrHidden(state, flags)) {
       return null;
     }
+
     // Make shallow copies so we can store the metadata safely
     ActivityInfo ai = new ActivityInfo(a.info);
+
     if ((flags & PackageManager.GET_META_DATA) != 0
         && (a.metaData != null)) {
       ai.metaData = a.metaData;
     }
+
     ai.applicationInfo = generateApplicationInfo(a.owner, flags, state, userId);
     return ai;
   }
