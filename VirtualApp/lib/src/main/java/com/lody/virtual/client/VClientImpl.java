@@ -482,6 +482,7 @@ public final class VClientImpl extends IVClient.Stub {
       e.printStackTrace();
       VirtualRuntime.crash(new RemoteException());
     }
+
     throw new RuntimeException();
   }
 

@@ -687,17 +687,21 @@ public class VActivityManagerService implements IActivityManager {
       killProcess(pid);
       return;
     }
+
     IInterface thread = null;
     try {
       thread = ApplicationThreadCompat.asInterface(client.getAppThread());
     } catch (RemoteException e) {
       // process has dead
     }
+
     if (thread == null) {
       killProcess(pid);
       return;
     }
+
     ProcessRecord app = null;
+
     try {
       IBinder token = client.getToken();
       if (token instanceof ProcessRecord) {
@@ -706,10 +710,12 @@ public class VActivityManagerService implements IActivityManager {
     } catch (RemoteException e) {
       // process has dead
     }
+
     if (app == null) {
       killProcess(pid);
       return;
     }
+
     try {
       final ProcessRecord record = app;
       clientBinder.linkToDeath(new IBinder.DeathRecipient() {
@@ -722,9 +728,11 @@ public class VActivityManagerService implements IActivityManager {
     } catch (RemoteException e) {
       e.printStackTrace();
     }
+
     app.client = client;
     app.appThread = thread;
     app.pid = pid;
+
     synchronized (mProcessNames) {
       mProcessNames.put(app.processName, app.vuid, app);
       mPidsSelfLocked.put(app.pid, app);
@@ -756,29 +764,39 @@ public class VActivityManagerService implements IActivityManager {
       // run GC
       killAllApps();
     }
+
     PackageSetting ps = PackageCacheManager.getSetting(packageName);
     ApplicationInfo info = VPackageManagerService.get().getApplicationInfo(packageName, 0, userId);
+
     if (ps == null || info == null) {
       return null;
     }
+
     if (!ps.isLaunched(userId)) {
       sendFirstLaunchBroadcast(ps, userId);
       ps.setLaunched(userId, true);
       VAppManagerService.get().savePersistenceData();
     }
+
     int uid = VUserHandle.getUid(userId, ps.appId);
     ProcessRecord app = mProcessNames.get(processName, uid);
+
     if (app != null && app.client.asBinder().isBinderAlive()) {
       return app;
     }
+
     int vpid = queryFreeStubProcessLocked();
+
     if (vpid == -1) {
       return null;
     }
+
     app = performStartProcessLocked(uid, vpid, info, processName);
+
     if (app != null) {
       app.pkgList.add(info.packageName);
     }
+
     return app;
   }
 
@@ -804,18 +822,22 @@ public class VActivityManagerService implements IActivityManager {
 
   private ProcessRecord performStartProcessLocked(int vuid, int vpid, ApplicationInfo info, String processName) {
     ProcessRecord app = new ProcessRecord(info, processName, vuid, vpid);
+
     Bundle extras = new Bundle();
     BundleCompat.putBinder(extras, "_VA_|_binder_", app);
     extras.putInt("_VA_|_vuid_", vuid);
     extras.putString("_VA_|_process_", processName);
     extras.putString("_VA_|_pkg_", info.packageName);
     Bundle res = ProviderCall.call(VASettings.getStubAuthority(vpid), "_VA_|_init_process_", null, extras);
+
     if (res == null) {
       return null;
     }
+
     int pid = res.getInt("_VA_|_pid_");
     IBinder clientBinder = BundleCompat.getBinder(res, "_VA_|_client_");
     attachClient(pid, clientBinder);
+
     return app;
   }
 
@@ -823,6 +845,7 @@ public class VActivityManagerService implements IActivityManager {
     for (int vpid = 0; vpid < VASettings.STUB_COUNT; vpid++) {
       int N = mPidsSelfLocked.size();
       boolean using = false;
+
       while (N-- > 0) {
         ProcessRecord r = mPidsSelfLocked.valueAt(N);
         if (r.vpid == vpid) {
@@ -830,11 +853,14 @@ public class VActivityManagerService implements IActivityManager {
           break;
         }
       }
+
       if (using) {
         continue;
       }
+
       return vpid;
     }
+
     return -1;
   }
 

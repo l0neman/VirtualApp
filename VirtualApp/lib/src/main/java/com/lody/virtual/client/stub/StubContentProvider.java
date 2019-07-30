@@ -29,14 +29,17 @@ public class StubContentProvider extends ContentProvider {
 		if ("_VA_|_init_process_".equals(method)) {
 			return initProcess(extras);
 		}
+
 		return null;
 	}
 
 	private Bundle initProcess(Bundle extras) {
 		ConditionVariable lock = VirtualCore.get().getInitLock();
+
 		if (lock != null) {
 			lock.block();
 		}
+
 		IBinder token = BundleCompat.getBinder(extras,"_VA_|_binder_");
 		int vuid = extras.getInt("_VA_|_vuid_");
 		VClientImpl client = VClientImpl.get();
@@ -44,6 +47,7 @@ public class StubContentProvider extends ContentProvider {
 		Bundle res = new Bundle();
 		BundleCompat.putBinder(res, "_VA_|_client_", client.asBinder());
 		res.putInt("_VA_|_pid_", Process.myPid());
+
 		return res;
 	}
 

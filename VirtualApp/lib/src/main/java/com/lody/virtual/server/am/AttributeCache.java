@@ -96,6 +96,7 @@ public final class AttributeCache {
 				} catch (PackageManager.NameNotFoundException e) {
 					return null;
 				}
+
 				pkg = new Package(context);
 				mPackages.put(packageName, pkg);
 			}

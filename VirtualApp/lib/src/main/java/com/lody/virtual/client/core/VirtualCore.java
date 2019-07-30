@@ -567,12 +567,14 @@ public final class VirtualCore {
 
   public Resources getResources(String pkg) throws Resources.NotFoundException {
     InstalledAppInfo installedAppInfo = getInstalledAppInfo(pkg, 0);
+
     if (installedAppInfo != null) {
       AssetManager assets = mirror.android.content.res.AssetManager.ctor.newInstance();
       mirror.android.content.res.AssetManager.addAssetPath.call(assets, installedAppInfo.apkPath);
       Resources hostRes = context.getResources();
       return new Resources(assets, hostRes.getDisplayMetrics(), hostRes.getConfiguration());
     }
+
     throw new Resources.NotFoundException(pkg);
   }
 

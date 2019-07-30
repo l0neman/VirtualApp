@@ -88,11 +88,13 @@ public class VActivityManager {
     ActivityClientRecord r = new ActivityClientRecord();
     r.info = info;
     mActivities.put(token, r);
+
     try {
       getService().onActivityCreated(component, caller, token, intent, affinity, taskId, launchMode, flags);
     } catch (RemoteException e) {
       e.printStackTrace();
     }
+
     return r;
   }
 
@@ -372,6 +374,7 @@ public class VActivityManager {
 
   public void sendActivityResult(IBinder resultTo, String resultWho, int requestCode) {
     ActivityClientRecord r = mActivities.get(resultTo);
+
     if (r != null && r.activity != null) {
       Object mainThread = VirtualCore.mainThread();
       ActivityThread.sendActivityResult.call(mainThread, resultTo, resultWho, requestCode, 0, null);

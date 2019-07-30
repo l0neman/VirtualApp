@@ -100,37 +100,51 @@ import mirror.android.app.IActivityManager;
             Object r = msg.obj;
             Intent stubIntent = ActivityThread.ActivityClientRecord.intent.get(r);
             StubActivityRecord saveInstance = new StubActivityRecord(stubIntent);
+
             if (saveInstance.intent == null) {
                 return true;
             }
+
             Intent intent = saveInstance.intent;
             ComponentName caller = saveInstance.caller;
             IBinder token = ActivityThread.ActivityClientRecord.token.get(r);
             ActivityInfo info = saveInstance.info;
+
             if (VClientImpl.get().getToken() == null) {
-                InstalledAppInfo installedAppInfo = VirtualCore.get().getInstalledAppInfo(info.packageName, 0);
+                InstalledAppInfo installedAppInfo = VirtualCore.get().getInstalledAppInfo(
+                    info.packageName, 0);
+
                 if(installedAppInfo == null){
                     return true;
                 }
-                VActivityManager.get().processRestarted(info.packageName, info.processName, saveInstance.userId);
+
+                VActivityManager.get().processRestarted(info.packageName, info.processName,
+                    saveInstance.userId);
                 getH().sendMessageAtFrontOfQueue(Message.obtain(msg));
                 return false;
             }
+
             if (!VClientImpl.get().isBound()) {
                 VClientImpl.get().bindApplication(info.packageName, info.processName);
                 getH().sendMessageAtFrontOfQueue(Message.obtain(msg));
                 return false;
             }
+
             int taskId = IActivityManager.getTaskForActivity.call(
                     ActivityManagerNative.getDefault.call(),
                     token,
                     false
             );
-            VActivityManager.get().onActivityCreate(ComponentUtils.toComponentName(info), caller, token, info, intent, ComponentUtils.getTaskAffinity(info), taskId, info.launchMode, info.flags);
+
+            VActivityManager.get().onActivityCreate(ComponentUtils.toComponentName(info), caller,
+                token, info, intent, ComponentUtils.getTaskAffinity(info), taskId, info.launchMode,
+                info.flags);
+
             ClassLoader appClassLoader = VClientImpl.get().getClassLoader(info.applicationInfo);
             intent.setExtrasClassLoader(appClassLoader);
             ActivityThread.ActivityClientRecord.intent.set(r, intent);
             ActivityThread.ActivityClientRecord.activityInfo.set(r, info);
+
             return true;
         }
 
