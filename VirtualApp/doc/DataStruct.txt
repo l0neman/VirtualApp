@@ -1,0 +1,148 @@
+# PackageParser
+
+## Package
+
+/**
+ * 表示从磁盘上解析出的完整 APK 包，一个包由单个 APK 或多个拆分 APK 构成。
+ */
+public final static class Package {
+
+    public String packageName;
+
+    /** 按名称解析的拆分 APK 的名字 */
+    public String[] splitNames;
+
+    // TODO: work towards making these paths invariant
+
+    public String volumeUuid;
+
+    /**
+     * 磁盘上找到的包路径，对于单包，表示 APK 路径，对于一组包，表示这组包目录的路径。
+     */
+    public String codePath;
+
+    /** 基础 APK 的路径 */
+    public String baseCodePath;
+    /** 按名称解析的拆分 APK 的路径 */
+    public String[] splitCodePaths;
+
+    /** 基础 APK 的修订码 */
+    public int baseRevisionCode;
+    /** 按名称解析的拆分 APK 的修订码 */
+    public int[] splitRevisionCodes;
+
+    /** 按名称解析的拆分 APK 的标记 */
+    public int[] splitFlags;
+
+    /**
+     * 按名称解析的拆分 APK 的私有标记。
+     *
+     * {@hide}
+     */
+    public int[] splitPrivateFlags;
+
+    public boolean baseHardwareAccelerated;
+
+    // 每个包只支持一个 Application。
+    public final ApplicationInfo applicationInfo = new ApplicationInfo();
+
+    public final ArrayList<Permission> permissions = new ArrayList<Permission>(0);
+    public final ArrayList<PermissionGroup> permissionGroups = new ArrayList<PermissionGroup>(0);
+    public final ArrayList<Activity> activities = new ArrayList<Activity>(0);
+    public final ArrayList<Activity> receivers = new ArrayList<Activity>(0);
+    public final ArrayList<Provider> providers = new ArrayList<Provider>(0);
+    public final ArrayList<Service> services = new ArrayList<Service>(0);
+    public final ArrayList<Instrumentation> instrumentation = new ArrayList<Instrumentation>(0);
+
+    public final ArrayList<String> requestedPermissions = new ArrayList<String>();
+
+    public ArrayList<String> protectedBroadcasts;
+
+    public ArrayList<String> libraryNames = null;
+    public ArrayList<String> usesLibraries = null;
+    public ArrayList<String> usesOptionalLibraries = null;
+    public String[] usesLibraryFiles = null;
+
+    public ArrayList<ActivityIntentInfo> preferredActivityFilters = null;
+
+    public ArrayList<String> mOriginalPackages = null;
+    public String mRealPackage = null;
+    public ArrayList<String> mAdoptPermissions = null;
+    
+    // 独立存储 Application 的 meta-data 数据以避免多个不需要的引用。
+    public Bundle mAppMetaData = null;
+
+    // 此包声明的版本码。
+    public int mVersionCode;
+
+    // 此包声明的版本名。
+    public String mVersionName;
+    
+    // 此包使用的共享用户标识。
+    public String mSharedUserId;
+
+    // 此包使用的共享用户标签。
+    public int mSharedUserLabel;
+
+    // 包的所有签名和证书信息。
+    public Signature[] mSignatures;
+    public Certificate[][] mCertificates;
+
+    // 提供给 PackageManager 使用，为了快速定位。
+    public int mPreferredOrder = 0;
+
+    // 提供给 PackageManager 使用，为了跟踪 dexopt 需要执行的操作。
+    public final ArraySet<String> mDexOptPerformed = new ArraySet<>(4);
+
+    // 提供给 PackageManager 使用，为了跟踪最后一次使用的时间。
+    public long mLastPackageUsageTimeInMills;
+
+    // // User set enabled state.
+    // public int mSetEnabled = PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;
+    //
+    // // Whether the package has been stopped.
+    // public boolean mSetStopped = false;
+
+    // 调用者提供的附加信息。
+    public Object mExtras;
+
+    // 应用程序的硬件偏好信息。
+    public ArrayList<ConfigurationInfo> configPreferences = null;
+
+    //  对应 <uses-feature> 标签。
+    public ArrayList<FeatureInfo> reqFeatures = null;
+
+    // 对应 <uses-group> 标签。
+    public ArrayList<FeatureGroupInfo> featureGroups = null;
+
+    public int installLocation;
+
+    public boolean coreApp;
+
+    /* 所有用户都需要的程序，无法被卸载 */
+    public boolean mRequiredForAllUsers;
+
+    /* 使用受限帐户身份验证器类型的程序 */
+    public String mRestrictedAccountType;
+
+    /* 所需的帐户类型应用程序，无法运行 */
+    public String mRequiredAccountType;
+
+    /**
+     * 摘要信息，比较此包的清单文件是否与另一个相同。
+     */
+    public ManifestDigest manifestDigest;
+
+    public String mOverlayTarget;
+    public int mOverlayPriority;
+    public boolean mTrustedOverlay;
+
+    /**
+     * 需要喂给 KeySetManagerService 的数据。
+     */
+    public ArraySet<PublicKey> mSigningKeys;
+    public ArraySet<String> mUpgradeKeySets;
+    public ArrayMap<String, ArraySet<PublicKey>> mKeySetMapping;
+}
+
+## 

@@ -1,0 +1,68 @@
+## 大纲
+
+1. activity 启动流程
+2. service 启动流程
+3. 各个 record 作用
+4. PackageParser 信息
+5. ContentProvider 安装
+6. 广播处理流程
+7. 启动进程处理
+8. AMS 初始化过程
+
+## AMS
+
+startBootstarapService():
+
+new AMS();
+	Installer installer = mSystemServiceManager.startService(Installer.class);;
+	AMS.start();
+	AMS.setInstaller(installer);
+	AMS.initPowerManagement();
+	AMS.setSystemProcess();
+
+startCoreServices():
+	AMS.setUsagesStatsManager(...);
+
+startOtherServices():
+	AMS.installSystemProviders();
+	watchdog.init(context, AMS);
+	AMS.systemReady(...);
+
+AMS<init>:
+	mSystemThread = ActivityThread.currentActivityThread();
+	mUiHandler = new UiHandler();
+	mFgBroadcastQueue
+	mBgBroadcastQueue
+	mBroadcastQueues[0] = mFgBroadcastQueue;
+	mBroadcastQueues[1] = mBgBroadcastQueue;	
+	mServices = new ActiveServices(this);
+	mProviderMap = new ProviderMap(this);
+	File dataDir = Environment.getDataDirectory();
+	File systemDir = new File(dataDir, "system");
+	mAppOpsService = new AppOpsService(...);
+	mRecentTasks = new RecentTasks(this);
+	mStackSupervisor = new ActivityStackSupervisor(this, mRecentTasks);
+
+AMS.start():
+	mBatteryStatsService.publish(mContext);
+	mAppOpsService.publish(mContext);
+
+
+caller = ApplicationThread();
+
+## VA
+
+### installPackage
+
++/data/data/xxx.xxx.va/
+  +virtual/
+  	+data/
+  		+app/
+  			+xxx.xxx.client/
+  				+lib
+
+  	-user
+  	-opt
+
+
+data@app@xxx.xxx.client-1@base.apk@classes.dex
