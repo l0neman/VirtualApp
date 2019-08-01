@@ -76,17 +76,24 @@ import static com.lody.virtual.os.VUserHandle.getUserId;
  */
 public class VActivityManagerService implements IActivityManager {
 
+  private static final String TAG = VActivityManagerService.class.getSimpleName();
+
   private static final boolean BROADCAST_NOT_STARTED_PKG = false;
 
   private static final AtomicReference<VActivityManagerService> sService = new AtomicReference<>();
-  private static final String TAG = VActivityManagerService.class.getSimpleName();
-  private final SparseArray<ProcessRecord> mPidsSelfLocked = new SparseArray<ProcessRecord>();
+
+  private final SparseArray<ProcessRecord> mPidsSelfLocked = new SparseArray<>();
+  private final ProcessMap<ProcessRecord> mProcessNames = new ProcessMap<>();
+
   private final ActivityStack mMainStack = new ActivityStack(this);
-  private final Set<ServiceRecord> mHistory = new HashSet<ServiceRecord>();
-  private final ProcessMap<ProcessRecord> mProcessNames = new ProcessMap<ProcessRecord>();
+
+  private final Set<ServiceRecord> mHistory = new HashSet<>();
+
   private final PendingIntents mPendingIntents = new PendingIntents();
+
   private ActivityManager am = (ActivityManager) VirtualCore.get().getContext()
       .getSystemService(Context.ACTIVITY_SERVICE);
+
   private NotificationManager nm = (NotificationManager) VirtualCore.get().getContext()
       .getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -128,7 +135,6 @@ public class VActivityManagerService implements IActivityManager {
     sService.set(this);
 
   }
-
 
   @Override
   public int startActivity(Intent intent, ActivityInfo info, IBinder resultTo, Bundle options,

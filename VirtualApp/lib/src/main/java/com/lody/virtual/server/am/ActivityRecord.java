@@ -8,11 +8,16 @@ import android.os.IBinder;
  */
 
 /* package */ class ActivityRecord {
+	/** 所在返回栈 */
 	public TaskRecord task;
 	public ComponentName component;
+	/** 调用者组件 */
 	public ComponentName caller;
+	/** 对应客户端进程 ActivityClientRecord 记录的 binder 引用 */
 	public IBinder token;
+	/** 所在应用用户 id */
 	public int userId;
+	/** 所在进程记录 */
 	public ProcessRecord process;
 	public int launchMode;
 	public int flags;

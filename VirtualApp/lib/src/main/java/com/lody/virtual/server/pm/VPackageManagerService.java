@@ -304,7 +304,7 @@ public class VPackageManagerService implements IPackageManager {
         VPackage.ActivityComponent a = mActivities.mActivities.get(component);
 
         if (a != null) {
-          // 根据用户 id 构建 AcitvityInfo。
+          // 根据用户 id 构建 ActivityInfo。
           ActivityInfo activityInfo = PackageParserEx.generateActivityInfo(a, flags, ps.readUserState(userId), userId);
           ComponentFixer.fixComponentInfo(ps, activityInfo, userId);
           return activityInfo;

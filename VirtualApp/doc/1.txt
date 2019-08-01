@@ -66,3 +66,8 @@ caller = ApplicationThread();
 
 
 data@app@xxx.xxx.client-1@base.apk@classes.dex
+
+uid (应用程序 id) = userId (用户 id) * 10000 + appId (应用程序 id)
+
+userId = uid / 1000 (because 0 <= appId < 10000)
+

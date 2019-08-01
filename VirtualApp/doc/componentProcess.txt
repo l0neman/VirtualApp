@@ -1,0 +1,62 @@
+start activity:
+
+ContextImpl:
+	startActivity:
+		mMainThread.getInstrumentation().execStartActivity(
+                getOuterContext(), mMainThread.getApplicationThread(), null,
+                (Activity) null, intent, -1, options);
+
+=>
+
+Instrumentation:
+	execStartActivity:
+		检查 activity 监视器状态
+		int result = ActivityManagerNative.getDefault()
+                .startActivity(whoThread, who.getBasePackageName(), intent,
+                        intent.resolveTypeIfNeeded(who.getContentResolver()),
+                        token, target != null ? target.mEmbeddedID : null,
+                        requestCode, 0, null, options);
+
+=>
+
+ActivityManagerProxy:
+	startActivity:
+		发送启动指令至远端
+
+=>
+
+ActivityManagerNative:
+	onTransact: START_ACTIVITY_TRANSACTION
+		接收指令并调用服务
+		int result = startActivity(app, callingPackage, intent, resolvedType,
+                    resultTo, resultWho, requestCode, startFlags, profilerInfo, options);
+
+=>
+
+ActivityManagerService:
+	startActivity:
+	=>
+	startActivityAsUser:
+		获取 userId
+		mStackSupervisor.startActivityMayWait(caller, -1, callingPackage, intent,
+                resolvedType, null, null, resultTo, resultWho, requestCode, startFlags,
+                profilerInfo, null, null, options, false, userId, null, null);
+
+=>
+
+ActiviyStackSupervisor:
+	startActivityMayWait:
+		查询指定 activity
+		int res = startActivityLocked(caller, intent, resolvedType, aInfo,
+                    voiceSession, voiceInteractor, resultTo, resultWho,
+                    requestCode, callingPid, callingUid, callingPackage,
+                    realCallingPid, realCallingUid, startFlags, options, ignoreTargetSecurity,
+                    componentSpecified, null, container, inTask);
+	=>
+	startActivityLocked:
+		检查目标 activty 有效性
+	=>
+	startActivityUncheckedLocked:
+		设置启动模式
+	
+
