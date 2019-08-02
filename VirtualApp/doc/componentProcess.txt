@@ -1,3 +1,5 @@
+组件相关流程：
+
 start activity:
 
 ContextImpl:

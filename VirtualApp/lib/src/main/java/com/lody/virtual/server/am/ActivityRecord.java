@@ -19,12 +19,17 @@ import android.os.IBinder;
 	public int userId;
 	/** 所在进程记录 */
 	public ProcessRecord process;
+	/** 清单文件启动模式 */
 	public int launchMode;
+	/**  */
 	public int flags;
 	public boolean marked;
+	/** 指定亲和栈标记 */
 	public String affinity;
 
-	public ActivityRecord(TaskRecord task, ComponentName component, ComponentName caller, IBinder token, int userId, ProcessRecord process, int launchMode, int flags, String affinity) {
+	public ActivityRecord(TaskRecord task, ComponentName component, ComponentName caller,
+												IBinder token, int userId, ProcessRecord process, int launchMode, int flags,
+												String affinity) {
 		this.task = task;
 		this.component = component;
 		this.caller = caller;
