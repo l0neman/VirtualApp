@@ -399,8 +399,10 @@ public class VActivityManager {
 
   public void finishActivity(IBinder token) {
     ActivityClientRecord r = getActivityRecord(token);
+
     if (r != null) {
       Activity activity = r.activity;
+
       while (true) {
         // We shouldn't use Activity.getParent(),
         // because It may be overwritten.
@@ -408,13 +410,16 @@ public class VActivityManager {
         if (parent == null) {
           break;
         }
+
         activity = parent;
       }
+
       // We shouldn't use Activity.isFinishing(),
       // because It may be overwritten.
       if (!mirror.android.app.Activity.mFinished.get(activity)) {
         int resultCode = mirror.android.app.Activity.mResultCode.get(activity);
         Intent resultData = mirror.android.app.Activity.mResultData.get(activity);
+
         ActivityManagerCompat.finishActivity(token, resultCode, resultData);
         mirror.android.app.Activity.mFinished.set(activity, true);
       }

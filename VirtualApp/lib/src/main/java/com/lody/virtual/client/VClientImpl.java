@@ -186,6 +186,7 @@ public final class VClientImpl extends IVClient.Stub {
     } else {
       intent = data.intent;
     }
+
     if (ActivityThread.performNewIntents != null) {
       ActivityThread.performNewIntents.call(
           VirtualCore.mainThread(),
@@ -309,7 +310,7 @@ public final class VClientImpl extends IVClient.Stub {
         }
       }
 
-      Object boundApp = fixBoundApp(mBoundApplication);
+    Object boundApp = fixBoundApp(mBoundApplication);
     mBoundApplication.info = ContextImpl.mPackageInfo.get(context);
     mirror.android.app.ActivityThread.AppBindData.info.set(boundApp, data.info);
     VMRuntime.setTargetSdkVersion.call(VMRuntime.getRuntime.call(), data.appInfo.targetSdkVersion);
@@ -406,7 +407,8 @@ public final class VClientImpl extends IVClient.Stub {
         groups.add(newRoot);
         mirror.java.lang.ThreadGroup.groups.set(root, groups);
         for (ThreadGroup group : newGroups) {
-          if (group == newRoot) continue;
+          if (group == newRoot)
+            continue;
           mirror.java.lang.ThreadGroup.parent.set(group, newRoot);
         }
       }
@@ -418,7 +420,8 @@ public final class VClientImpl extends IVClient.Stub {
         ThreadGroupN.groups.set(newRoot, newGroups);
         ThreadGroupN.groups.set(root, new ThreadGroup[]{newRoot});
         for (Object group : newGroups) {
-          if (group == newRoot) continue;
+          if (group == newRoot)
+            continue;
           ThreadGroupN.parent.set(group, newRoot);
         }
         ThreadGroupN.ngroups.set(root, 1);

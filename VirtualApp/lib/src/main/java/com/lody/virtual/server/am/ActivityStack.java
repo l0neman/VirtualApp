@@ -64,10 +64,14 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     return (intent.getFlags() & flags) != 0;
   }
 
+  /**
+   * 获取未被标记清除的顶部 activity
+   */
   private static ActivityRecord topActivityInTask(TaskRecord task) {
     synchronized (task.activities) {
       for (int size = task.activities.size() - 1; size >= 0; size--) {
         ActivityRecord r = task.activities.get(size);
+
         if (!r.marked) {
           return r;
         }
@@ -78,11 +82,15 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
   }
 
 
-  private void deliverNewIntentLocked(ActivityRecord sourceRecord, ActivityRecord targetRecord, Intent intent) {
+  /* 回调目标 activity 的 onNewIntent 方法 */
+  private void deliverNewIntentLocked(ActivityRecord sourceRecord, ActivityRecord targetRecord,
+                                      Intent intent) {
     if (targetRecord == null) {
       return;
     }
+
     String creator = sourceRecord != null ? sourceRecord.component.getPackageName() : "android";
+
     try {
       targetRecord.process.client.scheduleNewIntent(creator, targetRecord.token, intent);
     } catch (RemoteException e) {
@@ -92,7 +100,9 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     }
   }
 
-  /** 通过 userId 和 affinity 匹配历史栈中是否存在目标栈 */
+  /**
+   * 通过 userId 和 affinity 匹配历史栈中是否存在目标栈
+   */
   private TaskRecord findTaskByAffinityLocked(int userId, String affinity) {
     for (int i = 0; i < this.mHistory.size(); i++) {
       TaskRecord r = this.mHistory.valueAt(i);
@@ -105,7 +115,9 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     return null;
   }
 
-  /** 通过 userId 和 intent 匹配历史栈中是否存在目标栈（intent 为根元素） */
+  /**
+   * 通过 userId 和 intent 匹配历史栈中是否存在目标栈（intent 为根元素）
+   */
   private TaskRecord findTaskByIntentLocked(int userId, Intent intent) {
     for (int i = 0; i < this.mHistory.size(); i++) {
       TaskRecord r = this.mHistory.valueAt(i);
@@ -119,7 +131,9 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     return null;
   }
 
-  /** 通过 userId 和 token 对比查询栈记录中是否存在对应 token 的 activity */
+  /**
+   * 通过 userId 和 token 对比查询栈记录中是否存在对应 token 的 activity
+   */
   private ActivityRecord findActivityByToken(int userId, IBinder token) {
     ActivityRecord target = null;
 
@@ -143,50 +157,50 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     return target;
   }
 
-  /** 标记需要被清理的目标 activity 记录 */
+  /* 标记需要被清理的目标 activity 记录 */
   private boolean markTaskByClearTarget(TaskRecord task, ClearTarget clearTarget, ComponentName component) {
     boolean marked = false;
 
     synchronized (task.activities) {
       switch (clearTarget) {
-      // 全部标记。
-      case TASK: {
-        for (ActivityRecord r : task.activities) {
-          r.marked = true;
-          marked = true;
-        }
-      }
-      break;
-
-      // 只标记目标 activity。
-      case SPEC_ACTIVITY: {
-        for (ActivityRecord r : task.activities) {
-          if (r.component.equals(component)) {
+        // 全部标记。
+        case TASK: {
+          for (ActivityRecord r : task.activities) {
             r.marked = true;
             marked = true;
           }
         }
-      }
-      break;
+        break;
 
-      // 只标记目标 activity 上面的 activity。
-      case TOP: {
-        int N = task.activities.size();
-        while (N-- > 0) {
-          ActivityRecord r = task.activities.get(N);
-          if (r.component.equals(component)) {
-            marked = true;
-            break;
+        // 只标记目标 activity。
+        case SPEC_ACTIVITY: {
+          for (ActivityRecord r : task.activities) {
+            if (r.component.equals(component)) {
+              r.marked = true;
+              marked = true;
+            }
           }
         }
+        break;
 
-        if (marked) {
-          while (N++ < task.activities.size() - 1) {
-            task.activities.get(N).marked = true;
+        // 只标记目标 activity 上面的 activity。
+        case TOP: {
+          int N = task.activities.size();
+          while (N-- > 0) {
+            ActivityRecord r = task.activities.get(N);
+            if (r.component.equals(component)) {
+              marked = true;
+              break;
+            }
+          }
+
+          if (marked) {
+            while (N++ < task.activities.size() - 1) {
+              task.activities.get(N).marked = true;
+            }
           }
         }
-      }
-      break;
+        break;
 
       }
     }
@@ -252,12 +266,12 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       switch (info.documentLaunchMode) {
-      case ActivityInfo.DOCUMENT_LAUNCH_INTO_EXISTING:
-        reuseTarget = ReuseTarget.DOCUMENT;
-        break;
-      case ActivityInfo.DOCUMENT_LAUNCH_ALWAYS:
-        reuseTarget = ReuseTarget.MULTIPLE;
-        break;
+        case ActivityInfo.DOCUMENT_LAUNCH_INTO_EXISTING:
+          reuseTarget = ReuseTarget.DOCUMENT;
+          break;
+        case ActivityInfo.DOCUMENT_LAUNCH_ALWAYS:
+          reuseTarget = ReuseTarget.MULTIPLE;
+          break;
       }
     }
     if (containFlags(intent, Intent.FLAG_ACTIVITY_NEW_TASK)) {
@@ -330,6 +344,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
       clearTarget = ClearTarget.TOP;
     }
 
+    // clearTask 必须和 NEW_TASK 组合使用。
     if (clearTask) {
       if (containFlags(intent, Intent.FLAG_ACTIVITY_NEW_TASK)) {
         clearTarget = ClearTarget.TASK;
@@ -341,51 +356,51 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       switch (info.documentLaunchMode) {
         case ActivityInfo.DOCUMENT_LAUNCH_INTO_EXISTING:
-        clearTarget = ClearTarget.TASK;
-        reuseTarget = ReuseTarget.DOCUMENT;
-        break;
+          clearTarget = ClearTarget.TASK;
+          reuseTarget = ReuseTarget.DOCUMENT;
+          break;
 
-      case ActivityInfo.DOCUMENT_LAUNCH_ALWAYS:
-        reuseTarget = ReuseTarget.MULTIPLE;
-        break;
+        case ActivityInfo.DOCUMENT_LAUNCH_ALWAYS:
+          reuseTarget = ReuseTarget.MULTIPLE;
+          break;
       }
     }
 
     boolean singleTop = false;
 
     switch (info.launchMode) {
-    case LAUNCH_SINGLE_TOP: {
-      singleTop = true;
-      if (containFlags(intent, Intent.FLAG_ACTIVITY_NEW_TASK)) {
+      case LAUNCH_SINGLE_TOP: {
+        singleTop = true;
+        if (containFlags(intent, Intent.FLAG_ACTIVITY_NEW_TASK)) {
+          reuseTarget = containFlags(intent, Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+              ? ReuseTarget.MULTIPLE
+              : ReuseTarget.AFFINITY;
+        }
+      }
+      break;
+
+      case LAUNCH_SINGLE_TASK: {
+        clearTop = false;
+        clearTarget = ClearTarget.TOP;
         reuseTarget = containFlags(intent, Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
             ? ReuseTarget.MULTIPLE
             : ReuseTarget.AFFINITY;
       }
-    }
-    break;
+      break;
 
-    case LAUNCH_SINGLE_TASK: {
-      clearTop = false;
-      clearTarget = ClearTarget.TOP;
-      reuseTarget = containFlags(intent, Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-          ? ReuseTarget.MULTIPLE
-          : ReuseTarget.AFFINITY;
-    }
-    break;
-
-    case LAUNCH_SINGLE_INSTANCE: {
-      clearTop = false;
-      clearTarget = ClearTarget.TOP;
-      reuseTarget = ReuseTarget.AFFINITY;
-    }
-    break;
-
-    default: {
-      if (containFlags(intent, Intent.FLAG_ACTIVITY_SINGLE_TOP)) {
-        singleTop = true;
+      case LAUNCH_SINGLE_INSTANCE: {
+        clearTop = false;
+        clearTarget = ClearTarget.TOP;
+        reuseTarget = ReuseTarget.AFFINITY;
       }
-    }
-    break;
+      break;
+
+      default: {
+        if (containFlags(intent, Intent.FLAG_ACTIVITY_SINGLE_TOP)) {
+          singleTop = true;
+        }
+      }
+      break;
     }
 
     if (clearTarget == ClearTarget.NOTHING) {
@@ -402,17 +417,17 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     TaskRecord reuseTask = null;
 
     switch (reuseTarget) {
-    case AFFINITY:
-      reuseTask = findTaskByAffinityLocked(userId, affinity);
-      break;
-    case DOCUMENT:
-      reuseTask = findTaskByIntentLocked(userId, intent);
-      break;
-    case CURRENT:
-      reuseTask = sourceTask;
-      break;
-    default:
-      break;
+      case AFFINITY:
+        reuseTask = findTaskByAffinityLocked(userId, affinity);
+        break;
+      case DOCUMENT:
+        reuseTask = findTaskByIntentLocked(userId, intent);
+        break;
+      case CURRENT:
+        reuseTask = sourceTask;
+        break;
+      default:
+        break;
     }
 
     if (reuseTask == null) {
@@ -432,12 +447,14 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
       taskMarked = markTaskByClearTarget(reuseTask, clearTarget, intent.getComponent());
 
       ActivityRecord topRecord = topActivityInTask(reuseTask);
+
       if (clearTop && !singleTop && topRecord != null && taskMarked) {
         topRecord.marked = true;
       }
 
-      // Target activity is on top
+      // 顶部是目标 activity。
       if (topRecord != null && !topRecord.marked && topRecord.component.equals(intent.getComponent())) {
+
         deliverNewIntentLocked(sourceRecord, topRecord, intent);
         delivered = true;
       }
@@ -452,6 +469,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     if (!startTaskToFront) {
       if (!delivered) {
         destIntent = startActivityProcess(userId, sourceRecord, intent, info);
+
         if (destIntent != null) {
           startActivityFromSourceTask(reuseTask, destIntent, info, resultWho, requestCode, options);
         }
@@ -461,6 +479,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     return 0;
   }
 
+  /* 在新栈中启动 activity */
   private void startActivityInNewTaskLocked(int userId, Intent intent, ActivityInfo info,
                                             Bundle options) {
 
@@ -486,6 +505,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     }
   }
 
+  /* 结束标记的 activity */
   private void scheduleFinishMarkedActivityLocked() {
     int N = mHistory.size();
     while (N-- > 0) {
@@ -509,9 +529,12 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     }
   }
 
-  private void startActivityFromSourceTask(TaskRecord task, Intent intent, ActivityInfo info, String resultWho,
+  private void startActivityFromSourceTask(TaskRecord task, Intent intent,
+                                           ActivityInfo info, String resultWho,
                                            int requestCode, Bundle options) {
-    ActivityRecord top = task.activities.isEmpty() ? null : task.activities.get(task.activities.size() - 1);
+    ActivityRecord top = task.activities.isEmpty() ? null :
+        task.activities.get(task.activities.size() - 1);
+
     if (top != null) {
       if (startActivityProcess(task.userId, top, intent, info) != null) {
         realStartActivityLocked(top.token, intent, resultWho, requestCode, options);
@@ -550,6 +573,7 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     if (types[0] == IApplicationThread.TYPE) {
       args[0] = ActivityThread.getApplicationThread.call(VirtualCore.mainThread());
     }
+
     int intentIndex = ArrayUtils.protoIndexOf(types, Intent.class);
     int resultToIndex = ArrayUtils.protoIndexOf(types, IBinder.class, 2);
     int optionsIndex = ArrayUtils.protoIndexOf(types, Bundle.class);
@@ -570,8 +594,8 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     }
     ClassUtils.fixArgs(types, args);
 
-    mirror.android.app.IActivityManager.startActivity.call(ActivityManagerNative.getDefault.call(),
-        (Object[]) args);
+    mirror.android.app.IActivityManager.startActivity.call(
+        ActivityManagerNative.getDefault.call(), (Object[]) args);
   }
 
   private String fetchStubActivity(int vpid, ActivityInfo targetInfo) {
@@ -619,17 +643,20 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     }
   }
 
-  private Intent startActivityProcess(int userId, ActivityRecord sourceRecord, Intent intent,
-                                      ActivityInfo info) {
+  private Intent startActivityProcess(int userId, ActivityRecord sourceRecord,
+                                      Intent intent, ActivityInfo info) {
     intent = new Intent(intent);
 
-    ProcessRecord targetApp = mService.startProcessIfNeedLocked(info.processName, userId, info.packageName);
+    ProcessRecord targetApp = mService.startProcessIfNeedLocked(
+        info.processName, userId, info.packageName);
+
     if (targetApp == null) {
       return null;
     }
 
     Intent targetIntent = new Intent();
-    targetIntent.setClassName(VirtualCore.get().getHostPkg(), fetchStubActivity(targetApp.vpid, info));
+    targetIntent.setClassName(VirtualCore.get().getHostPkg(),
+        fetchStubActivity(targetApp.vpid, info));
     ComponentName component = intent.getComponent();
 
     if (component == null) {
@@ -781,13 +808,21 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
   }
 
   private enum ReuseTarget {
-    /** 当前 */
+    /**
+     * 当前
+     */
     CURRENT,
-    /** 亲和栈 */
+    /**
+     * 亲和栈
+     */
     AFFINITY,
-    /** 文档模式 */
+    /**
+     * 文档模式
+     */
     DOCUMENT,
-    /** 多栈 */
+    /**
+     * 多栈
+     */
     MULTIPLE
   }
 }
