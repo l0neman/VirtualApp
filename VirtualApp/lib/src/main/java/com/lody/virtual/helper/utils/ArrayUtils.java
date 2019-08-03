@@ -80,12 +80,15 @@ public class ArrayUtils {
 		if (array == null) {
 			return -1;
 		}
+
 		while (sequence < array.length) {
 			if (type.isInstance(array[sequence])) {
 				return sequence;
 			}
+
 			sequence++;
 		}
+
 		return -1;
 	}
 

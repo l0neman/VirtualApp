@@ -98,6 +98,7 @@ public class ComponentUtils {
       String name2 = second.name + "";
       return pkg1.equals(pkg2) && name1.equals(name2);
     }
+
     return false;
   }
 
@@ -106,15 +107,14 @@ public class ComponentUtils {
   }
 
   public static boolean isSystemApp(ApplicationInfo applicationInfo) {
-    return !GmsSupport.isGmsFamilyPackage(applicationInfo.packageName)
-        && ((ApplicationInfo.FLAG_SYSTEM & applicationInfo.flags) != 0
-        || SpecialComponentList.isSpecSystemPackage(applicationInfo.packageName));
+    return !GmsSupport.isGmsFamilyPackage(applicationInfo.packageName) &&
+        ((ApplicationInfo.FLAG_SYSTEM & applicationInfo.flags) != 0 ||
+            SpecialComponentList.isSpecSystemPackage(applicationInfo.packageName));
   }
 
   public static boolean isStubComponent(Intent intent) {
-    return intent != null
-        && intent.getComponent() != null
-        && VirtualCore.get().getHostPkg().equals(intent.getComponent().getPackageName());
+    return intent != null && intent.getComponent() != null &&
+        VirtualCore.get().getHostPkg().equals(intent.getComponent().getPackageName());
   }
 
   public static Intent redirectBroadcastIntent(Intent intent, int userId) {

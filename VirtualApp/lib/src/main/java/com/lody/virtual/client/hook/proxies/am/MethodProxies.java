@@ -327,27 +327,27 @@ class MethodProxies {
     private Intent redirectIntentSender(int type, String creator, Intent intent) {
       Intent newIntent = intent.cloneFilter();
       switch (type) {
-        case ActivityManagerCompat.INTENT_SENDER_ACTIVITY: {
-          ComponentInfo info = VirtualCore.get().resolveActivityInfo(intent, VUserHandle.myUserId());
-          if (info != null) {
-            newIntent.setClass(getHostContext(), StubPendingActivity.class);
-            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          }
+      case ActivityManagerCompat.INTENT_SENDER_ACTIVITY: {
+        ComponentInfo info = VirtualCore.get().resolveActivityInfo(intent, VUserHandle.myUserId());
+        if (info != null) {
+          newIntent.setClass(getHostContext(), StubPendingActivity.class);
+          newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
-        break;
-        case ActivityManagerCompat.INTENT_SENDER_SERVICE: {
-          ComponentInfo info = VirtualCore.get().resolveServiceInfo(intent, VUserHandle.myUserId());
-          if (info != null) {
-            newIntent.setClass(getHostContext(), StubPendingService.class);
-          }
+      }
+      break;
+      case ActivityManagerCompat.INTENT_SENDER_SERVICE: {
+        ComponentInfo info = VirtualCore.get().resolveServiceInfo(intent, VUserHandle.myUserId());
+        if (info != null) {
+          newIntent.setClass(getHostContext(), StubPendingService.class);
         }
-        break;
-        case ActivityManagerCompat.INTENT_SENDER_BROADCAST: {
-          newIntent.setClass(getHostContext(), StubPendingReceiver.class);
-        }
-        break;
-        default:
-          return null;
+      }
+      break;
+      case ActivityManagerCompat.INTENT_SENDER_BROADCAST: {
+        newIntent.setClass(getHostContext(), StubPendingReceiver.class);
+      }
+      break;
+      default:
+        return null;
       }
       newIntent.putExtra("_VA_|_user_id_", VUserHandle.myUserId());
       newIntent.putExtra("_VA_|_intent_", intent);
@@ -386,15 +386,20 @@ class MethodProxies {
       }
 
       int resultToIndex = ArrayUtils.indexOfObject(args, IBinder.class, 2);
-      String resolvedType = (String) args[intentIndex + 1];
+
       Intent intent = (Intent) args[intentIndex];
-      intent.setDataAndType(intent.getData(), resolvedType);
+      String resolvedType = (String) args[intentIndex + 1];
       IBinder resultTo = resultToIndex >= 0 ? (IBinder) args[resultToIndex] : null;
+
+      intent.setDataAndType(intent.getData(), resolvedType);
+
       int userId = VUserHandle.myUserId();
 
       if (ComponentUtils.isStubComponent(intent)) {
         return method.invoke(who, args);
       }
+
+      // process other cases.
 
       // 请求卸载安装界面。
       if (Intent.ACTION_INSTALL_PACKAGE.equals(intent.getAction())
@@ -404,19 +409,19 @@ class MethodProxies {
         if (handleInstallRequest(intent)) {
           return 0;
         }
-      } else
-        if ((Intent.ACTION_UNINSTALL_PACKAGE.equals(intent.getAction())
-            || Intent.ACTION_DELETE.equals(intent.getAction()))
-            && "package".equals(intent.getScheme())) {
+      } else if ((Intent.ACTION_UNINSTALL_PACKAGE.equals(intent.getAction())
+          || Intent.ACTION_DELETE.equals(intent.getAction()))
+          && "package".equals(intent.getScheme())) {
 
-          if (handleUninstallRequest(intent)) {
-            return 0;
-          }
+        if (handleUninstallRequest(intent)) {
+          return 0;
         }
+      }
 
       String resultWho = null;
       int requestCode = 0;
       Bundle options = ArrayUtils.getFirst(args, Bundle.class);
+
       if (resultTo != null) {
         resultWho = (String) args[resultToIndex + 1];
         requestCode = (int) args[resultToIndex + 2];
@@ -439,7 +444,9 @@ class MethodProxies {
         args[intentIndex - 1] = getHostPkg();
       }
 
-      if (intent.getScheme() != null && intent.getScheme().equals(SCHEME_PACKAGE) && intent.getData() != null) {
+      if (intent.getScheme() != null && intent.getScheme().equals(SCHEME_PACKAGE) &&
+          intent.getData() != null) {
+
         if (intent.getAction() != null && intent.getAction().startsWith("android.settings.")) {
           intent.setData(Uri.parse("package:" + getHostPkg()));
         }
@@ -515,34 +522,33 @@ class MethodProxies {
           } catch (RemoteException e) {
             e.printStackTrace();
           }
-        } else
-          if (SCHEME_CONTENT.equals(packageUri.getScheme())) {
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
-            File sharedFileCopy = new File(getHostContext().getCacheDir(), packageUri.getLastPathSegment());
-            try {
-              inputStream = getHostContext().getContentResolver().openInputStream(packageUri);
-              outputStream = new FileOutputStream(sharedFileCopy);
-              byte[] buffer = new byte[1024];
-              int count;
-              while ((count = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, count);
-              }
-              outputStream.flush();
+        } else if (SCHEME_CONTENT.equals(packageUri.getScheme())) {
+          InputStream inputStream = null;
+          OutputStream outputStream = null;
+          File sharedFileCopy = new File(getHostContext().getCacheDir(), packageUri.getLastPathSegment());
+          try {
+            inputStream = getHostContext().getContentResolver().openInputStream(packageUri);
+            outputStream = new FileOutputStream(sharedFileCopy);
+            byte[] buffer = new byte[1024];
+            int count;
+            while ((count = inputStream.read(buffer)) > 0) {
+              outputStream.write(buffer, 0, count);
+            }
+            outputStream.flush();
 
-            } catch (IOException e) {
-              e.printStackTrace();
-            } finally {
-              FileUtils.closeQuietly(inputStream);
-              FileUtils.closeQuietly(outputStream);
-            }
-            try {
-              listener.onRequestInstall(sharedFileCopy.getPath());
-              return true;
-            } catch (RemoteException e) {
-              e.printStackTrace();
-            }
+          } catch (IOException e) {
+            e.printStackTrace();
+          } finally {
+            FileUtils.closeQuietly(inputStream);
+            FileUtils.closeQuietly(outputStream);
           }
+          try {
+            listener.onRequestInstall(sharedFileCopy.getPath());
+            return true;
+          } catch (RemoteException e) {
+            e.printStackTrace();
+          }
+        }
 
       }
       return false;
@@ -754,13 +760,12 @@ class MethodProxies {
       boolean removeNotification = false;
       if (args[4] instanceof Boolean) {
         removeNotification = (boolean) args[4];
-      } else
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && args[4] instanceof Integer) {
-          int flags = (int) args[4];
-          removeNotification = (flags & Service.STOP_FOREGROUND_REMOVE) != 0;
-        } else {
-          VLog.e(getClass().getSimpleName(), "Unknown flag : " + args[4]);
-        }
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && args[4] instanceof Integer) {
+        int flags = (int) args[4];
+        removeNotification = (flags & Service.STOP_FOREGROUND_REMOVE) != 0;
+      } else {
+        VLog.e(getClass().getSimpleName(), "Unknown flag : " + args[4]);
+      }
       VNotificationManager.get().dealNotification(id, notification, getAppPkg());
 
       /**
@@ -1575,17 +1580,15 @@ class MethodProxies {
 
         return VASettings.ENABLE_INNER_SHORTCUT ? handleInstallShortcutIntent(intent) : null;
 
-      } else
-        if ("com.android.launcher.action.UNINSTALL_SHORTCUT".equals(action)) {
+      } else if ("com.android.launcher.action.UNINSTALL_SHORTCUT".equals(action)) {
 
-          handleUninstallShortcutIntent(intent);
+        handleUninstallShortcutIntent(intent);
 
-        } else
-          if (BadgerManager.handleBadger(intent)) {
-            return null;
-          } else {
-            return ComponentUtils.redirectBroadcastIntent(intent, VUserHandle.myUserId());
-          }
+      } else if (BadgerManager.handleBadger(intent)) {
+        return null;
+      } else {
+        return ComponentUtils.redirectBroadcastIntent(intent, VUserHandle.myUserId());
+      }
       return intent;
     }
 

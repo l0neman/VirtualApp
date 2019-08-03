@@ -41,7 +41,7 @@ import mirror.android.content.ContentProviderNative;
 public class VActivityManager {
 
   private static final VActivityManager sAM = new VActivityManager();
-  private final Map<IBinder, ActivityClientRecord> mActivities = new HashMap<IBinder, ActivityClientRecord>(6);
+  private final Map<IBinder, ActivityClientRecord> mActivities = new HashMap<>(6);
   private IPCSingleton<IActivityManager> singleton = new IPCSingleton<>(IActivityManager.class);
 
   public static VActivityManager get() {
@@ -53,7 +53,8 @@ public class VActivityManager {
   }
 
 
-  public int startActivity(Intent intent, ActivityInfo info, IBinder resultTo, Bundle options, String resultWho, int requestCode, int userId) {
+  public int startActivity(Intent intent, ActivityInfo info, IBinder resultTo, Bundle options,
+                           String resultWho, int requestCode, int userId) {
     try {
       return getService().startActivity(intent, info, resultTo, options, resultWho, requestCode, userId);
     } catch (RemoteException e) {
@@ -83,8 +84,11 @@ public class VActivityManager {
     return startActivity(intent, info, null, null, null, 0, userId);
   }
 
+  /** 本地和服务端记录 ActivityRecord 记录 */
   public ActivityClientRecord onActivityCreate(ComponentName component, ComponentName caller,
-                                               IBinder token, ActivityInfo info, Intent intent, String affinity, int taskId, int launchMode, int flags) {
+                                               IBinder token, ActivityInfo info, Intent intent,
+                                               String affinity, int taskId, int launchMode, int flags) {
+
     ActivityClientRecord r = new ActivityClientRecord();
     r.info = info;
     mActivities.put(token, r);

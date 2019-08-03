@@ -63,6 +63,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicReference;
 
 import mirror.android.app.IServiceConnectionO;
@@ -191,11 +192,14 @@ public class VActivityManagerService implements IActivityManager {
   }
 
   @Override
-  public void onActivityCreated(ComponentName component, ComponentName caller, IBinder token, Intent intent, String affinity, int taskId, int launchMode, int flags) {
+  public void onActivityCreated(ComponentName component, ComponentName caller, IBinder token,
+                                Intent intent, String affinity, int taskId, int launchMode, int flags) {
     int pid = Binder.getCallingPid();
     ProcessRecord targetApp = findProcessLocked(pid);
+
     if (targetApp != null) {
-      mMainStack.onActivityCreated(targetApp, component, caller, token, intent, affinity, taskId, launchMode, flags);
+      mMainStack.onActivityCreated(targetApp, component, caller, token, intent, affinity, taskId,
+          launchMode, flags);
     }
   }
 
@@ -650,13 +654,16 @@ public class VActivityManagerService implements IActivityManager {
     int callingPid = getCallingPid();
     int appId = VAppManagerService.get().getAppId(packageName);
     int uid = VUserHandle.getUid(userId, appId);
+
     synchronized (this) {
       ProcessRecord app = findProcessLocked(callingPid);
+
       if (app == null) {
         ApplicationInfo appInfo = VPackageManagerService.get().getApplicationInfo(packageName, 0, userId);
         appInfo.flags |= ApplicationInfo.FLAG_HAS_CODE;
         String stubProcessName = getProcessName(callingPid);
         int vpid = parseVPid(stubProcessName);
+
         if (vpid != -1) {
           performStartProcessLocked(uid, vpid, appInfo, processName);
         }
@@ -835,6 +842,7 @@ public class VActivityManagerService implements IActivityManager {
     extras.putInt("_VA_|_vuid_", vuid);
     extras.putString("_VA_|_process_", processName);
     extras.putString("_VA_|_pkg_", info.packageName);
+
     Bundle res = ProviderCall.call(VASettings.getStubAuthority(vpid), "_VA_|_init_process_", null, extras);
 
     if (res == null) {
@@ -848,6 +856,7 @@ public class VActivityManagerService implements IActivityManager {
     return app;
   }
 
+  /* 查询未分配的 VA pid  */
   private int queryFreeStubProcessLocked() {
     for (int vpid = 0; vpid < VASettings.STUB_COUNT; vpid++) {
       int N = mPidsSelfLocked.size();
@@ -855,6 +864,7 @@ public class VActivityManagerService implements IActivityManager {
 
       while (N-- > 0) {
         ProcessRecord r = mPidsSelfLocked.valueAt(N);
+
         if (r.vpid == vpid) {
           using = true;
           break;

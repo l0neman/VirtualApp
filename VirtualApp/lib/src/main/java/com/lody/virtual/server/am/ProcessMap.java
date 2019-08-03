@@ -8,8 +8,10 @@ class ProcessMap<E> {
 
 	public E get(String name, int uid) {
 		SparseArray<E> uids = mMap.get(name);
+
 		if (uids == null)
 			return null;
+
 		return uids.get(uid);
 	}
 
@@ -19,19 +21,24 @@ class ProcessMap<E> {
 			uids = new SparseArray<E>(2);
 			mMap.put(name, uids);
 		}
+
 		uids.put(uid, value);
 		return value;
 	}
 
 	public E remove(String name, int uid) {
 		SparseArray<E> uids = mMap.get(name);
+
 		if (uids != null) {
 			final E old = uids.removeReturnOld(uid);
+
 			if (uids.size() == 0) {
 				mMap.remove(name);
 			}
+
 			return old;
 		}
+
 		return null;
 	}
 

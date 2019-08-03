@@ -1,1 +1,9 @@
 API 列表
+
+ActivityManager:
+
+// 返回最近栈信息。
+public List<ActivityManager.RecentTaskInfo> getRecentTasks (int maxNum, int flags);
+
+// 将栈移至前台。
+public void moveTaskToFront(int taskId, @MoveTaskFlags int flags) {

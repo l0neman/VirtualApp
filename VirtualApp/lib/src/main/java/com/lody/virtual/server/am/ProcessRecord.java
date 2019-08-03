@@ -14,8 +14,8 @@ import java.util.Set;
 final class ProcessRecord extends Binder implements Comparable<ProcessRecord> {
 
   final ConditionVariable lock = new ConditionVariable();
-  public final ApplicationInfo info; // all about the first app in the process
-  final public String processName; // name of the process
+  public final ApplicationInfo info;           // all about the first app in the process
+  final public String processName;             // name of the process
   final Set<String> pkgList = new HashSet<>(); // List of packages
   /** 客户端处理程序 */
   public IVClient client;

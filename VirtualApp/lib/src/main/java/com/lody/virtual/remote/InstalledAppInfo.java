@@ -13,6 +13,8 @@ import java.io.File;
 
 /**
  * @author Lody
+ *
+ * PackageSetting 局部信息。
  */
 public final class InstalledAppInfo implements Parcelable {
 

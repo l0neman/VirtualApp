@@ -15,8 +15,7 @@ import java.util.List;
 
 class TaskRecord {
   /** 返回栈所有 activity 记录 */
-  public final List<ActivityRecord> activities =
-      Collections.synchronizedList(new ArrayList<ActivityRecord>());
+  public final List<ActivityRecord> activities = Collections.synchronizedList(new ArrayList<ActivityRecord>());
   /** 返回栈 id */
   public int taskId;
   /** 用户 id */

@@ -42,8 +42,10 @@ public class StubContentProvider extends ContentProvider {
 
 		IBinder token = BundleCompat.getBinder(extras,"_VA_|_binder_");
 		int vuid = extras.getInt("_VA_|_vuid_");
+
 		VClientImpl client = VClientImpl.get();
 		client.initProcess(token, vuid);
+
 		Bundle res = new Bundle();
 		BundleCompat.putBinder(res, "_VA_|_client_", client.asBinder());
 		res.putInt("_VA_|_pid_", Process.myPid());

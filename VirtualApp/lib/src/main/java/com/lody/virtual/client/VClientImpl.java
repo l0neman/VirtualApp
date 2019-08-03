@@ -97,6 +97,7 @@ public final class VClientImpl extends IVClient.Stub {
   private final H mH = new H();
   private ConditionVariable mTempLock;
   private Instrumentation mInstrumentation = AppInstrumentation.getDefault();
+  /** 服务端 ProcessRecord 对象 */
   private IBinder token;
   private int vuid;
   private VDeviceInfo deviceInfo;

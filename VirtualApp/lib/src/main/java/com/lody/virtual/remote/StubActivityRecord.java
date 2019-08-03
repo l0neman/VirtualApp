@@ -9,8 +9,11 @@ import android.content.pm.ActivityInfo;
  */
 
 public class StubActivityRecord {
+  /** 启动 intent */
   public Intent intent;
+  /** 启动 activity */
   public ActivityInfo info;
+  /** 发起者 */
   public ComponentName caller;
   public int userId;
 

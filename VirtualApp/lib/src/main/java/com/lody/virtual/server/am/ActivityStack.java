@@ -568,10 +568,21 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
         (Object[]) args);
   }
 
+  /*
+    call:
+
+    IActivityManager:
+    impl - ActivityManagerProxy:
+      public int startActivity(IApplicationThread caller, String callingPackage, Intent intent,
+            String resolvedType, IBinder resultTo, String resultWho, int requestCode,
+            int startFlags, ProfilerInfo profilerInfo, Bundle options) throws RemoteException;
+
+   */
   private void realStartActivityLocked(IBinder resultTo, Intent intent, String resultWho, int requestCode,
                                        Bundle options) {
     Class<?>[] types = mirror.android.app.IActivityManager.startActivity.paramList();
     Object[] args = new Object[types.length];
+
     if (types[0] == IApplicationThread.TYPE) {
       args[0] = ActivityThread.getApplicationThread.call(VirtualCore.mainThread());
     }
@@ -587,13 +598,17 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     args[resultToIndex] = resultTo;
     args[resultWhoIndex] = resultWho;
     args[requestCodeIndex] = requestCode;
+
     if (optionsIndex != -1) {
       args[optionsIndex] = options;
     }
+
     args[resolvedTypeIndex] = intent.getType();
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       args[intentIndex - 1] = VirtualCore.get().getHostPkg();
     }
+
     ClassUtils.fixArgs(types, args);
 
     mirror.android.app.IActivityManager.startActivity.call(
@@ -649,23 +664,25 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
                                       Intent intent, ActivityInfo info) {
     intent = new Intent(intent);
 
-    ProcessRecord targetApp = mService.startProcessIfNeedLocked(
-        info.processName, userId, info.packageName);
+    ProcessRecord targetApp = mService.startProcessIfNeedLocked(info.processName, userId,
+        info.packageName);
 
     if (targetApp == null) {
       return null;
     }
 
     Intent targetIntent = new Intent();
-    targetIntent.setClassName(VirtualCore.get().getHostPkg(),
-        fetchStubActivity(targetApp.vpid, info));
+    targetIntent.setClassName(VirtualCore.get().getHostPkg(), fetchStubActivity(targetApp.vpid, info));
+
     ComponentName component = intent.getComponent();
 
     if (component == null) {
       component = ComponentUtils.toComponentName(info);
     }
 
+    // 记录原始 component.
     targetIntent.setType(component.flattenToString());
+
     StubActivityRecord saveInstance = new StubActivityRecord(intent, info,
         sourceRecord != null ? sourceRecord.component : null, userId);
 
@@ -679,12 +696,15 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
     synchronized (mHistory) {
       optimizeTasksLocked();
       TaskRecord task = mHistory.get(taskId);
+
       if (task == null) {
         task = new TaskRecord(taskId, targetApp.userId, affinity, taskRoot);
         mHistory.put(taskId, task);
       }
+
       ActivityRecord record = new ActivityRecord(task, component, caller, token, targetApp.userId, targetApp,
           launchMode, flags, affinity);
+
       synchronized (task.activities) {
         task.activities.add(record);
       }
