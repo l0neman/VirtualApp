@@ -448,12 +448,14 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
 
       ActivityRecord topRecord = topActivityInTask(reuseTask);
 
+      // 如果 activity 未指定 singleTop，则会重建此 activity。
       if (clearTop && !singleTop && topRecord != null && taskMarked) {
         topRecord.marked = true;
       }
 
       // 顶部是目标 activity。
-      if (topRecord != null && !topRecord.marked && topRecord.component.equals(intent.getComponent())) {
+      if (topRecord != null && !topRecord.marked &&
+          topRecord.component.equals(intent.getComponent())) {
 
         deliverNewIntentLocked(sourceRecord, topRecord, intent);
         delivered = true;
@@ -480,8 +482,8 @@ import static android.content.pm.ActivityInfo.LAUNCH_SINGLE_TOP;
   }
 
   /* 在新栈中启动 activity */
-  private void startActivityInNewTaskLocked(int userId, Intent intent, ActivityInfo info,
-                                            Bundle options) {
+  private void startActivityInNewTaskLocked(int userId, Intent intent,
+                                            ActivityInfo info, Bundle options) {
 
     Intent destIntent = startActivityProcess(userId, null, intent, info);
 

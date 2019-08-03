@@ -772,7 +772,8 @@ public class VActivityManagerService implements IActivityManager {
     }
 
     PackageSetting ps = PackageCacheManager.getSetting(packageName);
-    ApplicationInfo info = VPackageManagerService.get().getApplicationInfo(packageName, 0, userId);
+    ApplicationInfo info = VPackageManagerService.get().getApplicationInfo(
+        packageName, 0, userId);
 
     if (ps == null || info == null) {
       return null;
