@@ -259,9 +259,13 @@ public final class VClientImpl extends IVClient.Stub {
     data.appInfo = VPackageManager.get().getApplicationInfo(packageName, 0, getUserId(vuid));
     data.processName = processName;
     data.providers = VPackageManager.get().queryContentProviders(processName, getVUid(), PackageManager.GET_META_DATA);
+
     Log.i(TAG, "Binding application " + data.appInfo.packageName + " (" + data.processName + ")");
+
     mBoundApplication = data;
+
     VirtualRuntime.setupRuntime(data.processName, data.appInfo);
+
     int targetSdkVersion = data.appInfo.targetSdkVersion;
 
     if (targetSdkVersion < Build.VERSION_CODES.GINGERBREAD) {
@@ -481,7 +485,9 @@ public final class VClientImpl extends IVClient.Stub {
   private Context createPackageContext(String packageName) {
     try {
       Context hostContext = VirtualCore.get().getContext();
-      return hostContext.createPackageContext(packageName, Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
+      return hostContext.createPackageContext(packageName, Context.CONTEXT_INCLUDE_CODE |
+          Context.CONTEXT_IGNORE_SECURITY);
+
     } catch (PackageManager.NameNotFoundException e) {
       e.printStackTrace();
       VirtualRuntime.crash(new RemoteException());

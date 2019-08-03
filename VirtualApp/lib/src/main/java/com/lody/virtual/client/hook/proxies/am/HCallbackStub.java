@@ -128,6 +128,7 @@ public class HCallbackStub implements Handler.Callback, IInjector {
 
     if (!VClientImpl.get().isBound()) {
       VClientImpl.get().bindApplication(info.packageName, info.processName);
+      // 再执行一次，调用系统原始处理方法启动 activity。
       getH().sendMessageAtFrontOfQueue(Message.obtain(msg));
       return false;
     }
@@ -138,6 +139,7 @@ public class HCallbackStub implements Handler.Callback, IInjector {
         false
     );
 
+    // 保存 activity 记录。
     VActivityManager.get().onActivityCreate(ComponentUtils.toComponentName(info), caller,
         token, info, intent, ComponentUtils.getTaskAffinity(info), taskId, info.launchMode,
         info.flags);
