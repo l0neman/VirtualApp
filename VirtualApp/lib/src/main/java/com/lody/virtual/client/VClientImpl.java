@@ -85,7 +85,6 @@ import static com.lody.virtual.os.VUserHandle.getUserId;
 /**
  * @author Lody
  */
-
 public final class VClientImpl extends IVClient.Stub {
 
   private static final int NEW_INTENT = 11;
