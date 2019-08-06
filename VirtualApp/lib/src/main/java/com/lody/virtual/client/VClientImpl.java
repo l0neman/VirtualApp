@@ -218,6 +218,7 @@ public final class VClientImpl extends IVClient.Stub {
     }
   }
 
+  // bind application and fix related to application info.
   private void bindApplicationNoCheck(String packageName, String processName, ConditionVariable lock) {
     VDeviceInfo deviceInfo = getDeviceInfo();
 
@@ -268,11 +269,13 @@ public final class VClientImpl extends IVClient.Stub {
     int targetSdkVersion = data.appInfo.targetSdkVersion;
 
     if (targetSdkVersion < Build.VERSION_CODES.GINGERBREAD) {
-      StrictMode.ThreadPolicy newPolicy = new StrictMode.ThreadPolicy.Builder(StrictMode.getThreadPolicy()).permitNetwork().build();
+      StrictMode.ThreadPolicy newPolicy = new StrictMode.ThreadPolicy.Builder(
+          StrictMode.getThreadPolicy()).permitNetwork().build();
       StrictMode.setThreadPolicy(newPolicy);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && targetSdkVersion < Build.VERSION_CODES.LOLLIPOP) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+        targetSdkVersion < Build.VERSION_CODES.LOLLIPOP) {
       mirror.android.os.Message.updateCheckRecycle.call(targetSdkVersion);
     }
 

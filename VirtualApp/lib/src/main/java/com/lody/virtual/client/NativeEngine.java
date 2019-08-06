@@ -125,9 +125,11 @@ public class NativeEngine {
     public static void enableIORedirect() {
         try {
             String soPath = String.format("/data/data/%s/lib/libva++.so", VirtualCore.get().getHostPkg());
+
             if (!new File(soPath).exists()) {
                 throw new RuntimeException("Unable to find the so.");
             }
+
             nativeEnableIORedirect(soPath, Build.VERSION.SDK_INT, BuildCompat.getPreviewSDKInt());
         } catch (Throwable e) {
             VLog.e(TAG, VLog.getStackTraceString(e));
@@ -138,12 +140,17 @@ public class NativeEngine {
         if (sFlag) {
             return;
         }
-        Method[] methods = {NativeMethods.gOpenDexFileNative, NativeMethods.gCameraNativeSetup, NativeMethods.gAudioRecordNativeCheckPermission};
+
+        Method[] methods = {NativeMethods.gOpenDexFileNative, NativeMethods.gCameraNativeSetup,
+            NativeMethods.gAudioRecordNativeCheckPermission};
+
         try {
-            nativeLaunchEngine(methods, VirtualCore.get().getHostPkg(), VirtualRuntime.isArt(), Build.VERSION.SDK_INT, NativeMethods.gCameraMethodType);
+            nativeLaunchEngine(methods, VirtualCore.get().getHostPkg(), VirtualRuntime.isArt(),
+                Build.VERSION.SDK_INT, NativeMethods.gCameraMethodType);
         } catch (Throwable e) {
             VLog.e(TAG, VLog.getStackTraceString(e));
         }
+
         sFlag = true;
     }
 
