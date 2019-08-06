@@ -3,7 +3,6 @@ package com.lody.virtual.client.core;
 /**
  * @author Lody
  *
- *
  */
 public interface InstallStrategy {
 	int TERMINATE_IF_EXIST = 0x01 << 1;

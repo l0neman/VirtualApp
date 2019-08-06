@@ -10,6 +10,8 @@ import java.util.Map;
 
 /**
  * @author Lody
+ *
+ * 消息气泡管理。
  */
 public class BadgerManager {
 

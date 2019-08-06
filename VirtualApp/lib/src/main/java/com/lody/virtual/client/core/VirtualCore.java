@@ -56,6 +56,8 @@ import mirror.android.app.ActivityThread;
 /**
  * @author Lody
  * @version 3.5
+ *
+ * 客户端交互界面。
  */
 public final class VirtualCore {
 

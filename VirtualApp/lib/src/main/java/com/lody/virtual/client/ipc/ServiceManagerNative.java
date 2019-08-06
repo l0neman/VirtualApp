@@ -49,7 +49,8 @@ public class ServiceManagerNative {
     }
 
     public static void ensureServerStarted() {
-        new ProviderCall.Builder(VirtualCore.get().getContext(), SERVICE_CP_AUTH).methodName("ensure_created").call();
+        new ProviderCall.Builder(VirtualCore.get().getContext(),
+            SERVICE_CP_AUTH).methodName("ensure_created").call();
     }
 
     public static void clearServerFetcher() {

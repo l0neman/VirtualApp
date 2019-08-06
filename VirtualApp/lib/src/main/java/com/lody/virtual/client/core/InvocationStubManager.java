@@ -1,8 +1,6 @@
 package com.lody.virtual.client.core;
 
-import android.content.Context;
 import android.os.Build;
-import android.system.Os;
 
 import com.lody.virtual.client.hook.base.MethodInvocationProxy;
 import com.lody.virtual.client.hook.base.MethodInvocationStub;
@@ -68,6 +66,8 @@ import static android.os.Build.VERSION_CODES.N;
 
 /**
  * @author Lody
+ *
+ * 系统服务 hook 注入管理器。
  */
 public final class InvocationStubManager {
 
