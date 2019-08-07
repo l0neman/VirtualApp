@@ -1,4 +1,6 @@
-组件相关流程：
+# Android 组件处理相关流程
+
+## Activity 组件相关流程：
 
 start activity:
 
@@ -61,37 +63,14 @@ ActiviyStackSupervisor:
 	startActivityUncheckedLocked:
 		设置启动模式
 	
+## ActivityThread
 
-== process launchMode
+attach:
+sCurrentActivityThread = this;
+mSystemThreaad = isSystem?;
 
-== reuse:
+RuntimeInit.mApplicationObject = mAppThread:ApplicationThread;
 
-current
-
-affinity
-singleTop + NEW_TASK
-singleTask
-singleInstance
-
-multiple 
-document_always
-singleTop + NEW_TASK + MULTI_TASK
-singleTask + MULTI_TASK
-
-document
-document_exist
-
-== clear:
-
-no
-
-spec
-reorder_to_front
-
-task = true
-clearTask + newTask
-
-top  = true
-clearTop
-singleTask
-singleInstance
+AMS.attachApplication() {
+	thread.bindApplication();
+}

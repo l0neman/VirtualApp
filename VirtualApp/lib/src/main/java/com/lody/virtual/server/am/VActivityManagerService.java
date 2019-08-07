@@ -141,12 +141,14 @@ public class VActivityManagerService implements IActivityManager {
   public int startActivity(Intent intent, ActivityInfo info, IBinder resultTo, Bundle options,
                            String resultWho, int requestCode, int userId) {
     synchronized (this) {
-      return mMainStack.startActivityLocked(userId, intent, info, resultTo, options, resultWho, requestCode);
+      return mMainStack.startActivityLocked(userId, intent, info, resultTo, options, resultWho,
+          requestCode);
     }
   }
 
   @Override
-  public int startActivities(Intent[] intents, String[] resolvedTypes, IBinder token, Bundle options, int userId) {
+  public int startActivities(Intent[] intents, String[] resolvedTypes, IBinder token, Bundle options,
+                             int userId) {
     synchronized (this) {
       ActivityInfo[] infos = new ActivityInfo[intents.length];
       for (int i = 0; i < intents.length; i++) {

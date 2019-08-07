@@ -264,10 +264,12 @@ public final class VClientImpl extends IVClient.Stub {
 
     mBoundApplication = data;
 
+    // fix process runtime info.
     VirtualRuntime.setupRuntime(data.processName, data.appInfo);
 
     int targetSdkVersion = data.appInfo.targetSdkVersion;
 
+    // fix related to target sdk version info.
     if (targetSdkVersion < Build.VERSION_CODES.GINGERBREAD) {
       StrictMode.ThreadPolicy newPolicy = new StrictMode.ThreadPolicy.Builder(
           StrictMode.getThreadPolicy()).permitNetwork().build();

@@ -10,7 +10,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
 /**
- * @author Lody
  * <p>
  * This class is responsible with:
  * - Instantiating a {@link MethodInvocationStub.HookInvocationHandler} on {@link #getInvocationStub()} ()}
@@ -28,8 +27,8 @@ public abstract class MethodInvocationProxy<T extends MethodInvocationStub> impl
 
   public MethodInvocationProxy(T invocationStub) {
     this.mInvocationStub = invocationStub;
+
     onBindMethods();
-    afterHookApply(invocationStub);
 
     LogInvocation loggingAnnotation = getClass().getAnnotation(LogInvocation.class);
     if (loggingAnnotation != null) {
@@ -83,9 +82,6 @@ public abstract class MethodInvocationProxy<T extends MethodInvocationStub> impl
 
   public MethodProxy addMethodProxy(MethodProxy methodProxy) {
     return mInvocationStub.addMethodProxy(methodProxy);
-  }
-
-  protected void afterHookApply(T delegate) {
   }
 
   @Override

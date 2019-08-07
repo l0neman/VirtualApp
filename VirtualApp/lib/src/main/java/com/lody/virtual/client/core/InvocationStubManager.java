@@ -116,7 +116,6 @@ public final class InvocationStubManager {
     }
 
     if (VirtualCore.get().isServerProcess()) {
-
       // hook ActivityManager，将对 Context.ACTIVITY_SERVICE 和 startActivity 造成影响。
       addInjector(new ActivityManagerStub());
       // hook PackageManager，将对 context.getPackageManager() 造成影响。
