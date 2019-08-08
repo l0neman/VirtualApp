@@ -776,10 +776,11 @@ public class VActivityManagerService implements IActivityManager {
 
   ProcessRecord startProcessIfNeedLocked(String processName, int userId, String packageName) {
     if (VActivityManagerService.get().getFreeStubCount() < 3) {
-      // run GC
+      // 达到限制，清理进程。
       killAllApps();
     }
 
+    // 获取包信息。
     PackageSetting ps = PackageCacheManager.getSetting(packageName);
     ApplicationInfo info = VPackageManagerService.get().getApplicationInfo(
         packageName, 0, userId);
@@ -789,26 +790,33 @@ public class VActivityManagerService implements IActivityManager {
     }
 
     if (!ps.isLaunched(userId)) {
+      // 发送首次启动广播。
       sendFirstLaunchBroadcast(ps, userId);
+      // 更新状态。
       ps.setLaunched(userId, true);
+      // 持久化 packageSetting。
       VAppManagerService.get().savePersistenceData();
     }
 
     int uid = VUserHandle.getUid(userId, ps.appId);
     ProcessRecord app = mProcessNames.get(processName, uid);
 
+    // 已存在目标进程。
     if (app != null && app.client.asBinder().isBinderAlive()) {
       return app;
     }
 
+    // 查询空闲的预先注册的占位进程。
     int vpid = queryFreeStubProcessLocked();
 
     if (vpid == -1) {
       return null;
     }
 
+    // 执行启动进程。
     app = performStartProcessLocked(uid, vpid, info, processName);
 
+    // 更新进程记录中的包名。
     if (app != null) {
       app.pkgList.add(info.packageName);
     }

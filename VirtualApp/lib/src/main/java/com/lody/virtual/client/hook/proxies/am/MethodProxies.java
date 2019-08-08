@@ -428,7 +428,6 @@ class MethodProxies {
       }
 
       // 选择器界面。
-      // chooser
       if (ChooserActivity.check(intent)) {
         intent.setComponent(new ComponentName(getHostContext(), ChooserActivity.class));
 

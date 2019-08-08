@@ -56,7 +56,7 @@ uid（用户相关应用 id）= userId（用户 id） * 100000 + appId（应用 
 
 和启动 activity 方法一致。
 
-### 运行管理
+#### 运行管理
 
 由于沙盒内应用的服务不必与手机系统内的应用发生沟通，那么对于 service 组件，没有必要再让它经过系统的 `ActivityManagerService` 服务了，那么直接调用 framework 中的本地服务初始化方法即可，并在沙盒虚拟 `ActivityManagerService` 服务中维护 service 的记录。
 
@@ -66,7 +66,7 @@ uid（用户相关应用 id）= userId（用户 id） * 100000 + appId（应用 
 
 ### Receiver
 
-广播，对于沙盒内应用注册的系统广播，可将静态注册的广播动态化注册，对于非系统事件的广播，可选择不干涉，直接通过系统广播注册接收，也可在沙盒虚拟 `ActivityManagerService` 服务中实现广播注册和接收服务。
+对于沙盒内应用注册的系统广播，可将静态注册的广播动态化注册，对于非系统事件的广播，可选择不干涉，直接通过系统广播注册接收，也可在沙盒虚拟 `ActivityManagerService` 服务中实现广播注册和接收服务。
 
 ## 应用信息提供
 
