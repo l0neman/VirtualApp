@@ -72,7 +72,7 @@ uid（用户相关应用 id）= userId（用户 id） * 100000 + appId（应用 
 
 通过 Hook 相关系统服务，修改其中提供信息的相关方法，或重定向带有相关运行时信息的文件，使沙盒内子应用访问到的系统服务不同，访问到的系统文件改变，导致应用获取到的信息不同。
 
-## 核心服务类
+### 核心服务类
 
 ```java
 // 1. 包管理服务。    line numbers: 1231 - 1073
@@ -108,3 +108,50 @@ IPCBus.register(IDeviceInfoManager.class, VDeviceManagerService.get());
 // 11. 虚拟定位服务。 line numbers: 266 - 270
 IPCBus.register(IVirtualLocationManager.class, VirtualLocationService.get());
 ```
+
+### 虚拟文件系统结构
+
+```java
++/data/data/io.lody.virtual/              // 沙盒宿主目录。 
+  +virtual/                               // 虚拟沙盒根目录
+    +data/                                // 虚拟 data 目录。
+      +app/                               // 虚拟 app 目录。
+        +xxx.xxx.app0/                    // 沙盒应用信息目录
+          -lib/                           // 沙盒应用 so 库解压位置。
+          package.ini
+          signature.ini
+        +xxx.xxx.app0/
+          -lib/
+          package.ini
+          signature.ini
+        +system/                          // 虚拟 system 目录。
+          +sync/                          // 虚拟 sync 目录。
+      +system/                            // 虚拟 system 目录。
+        +users/                            // 虚拟用户信息目录。
+          -0/
+          0.xml
+          1.xml
+          userlist.xml
+      +user/                              // 虚拟用户文件目录。
+        +0/                               // 虚拟用户目录。
+          +xxx.xxx.app0                   // 虚拟用户安装应用文件目录。
+            -lib/
+            -files/
+            -share_prefs
+          +xxx.xxx.app1
+            -lib/
+            -files/
+            -share_prefs
+        +1/
+        	+xxx.xxx.app0
+            -lib/
+            -files/
+            -share_prefs
+      +user_de/
+        +0/
+          +xxx.xxx.app0
+          +xxx.xxx.app1
+        +1/
+          +xxx.xxx.app0
+```
+

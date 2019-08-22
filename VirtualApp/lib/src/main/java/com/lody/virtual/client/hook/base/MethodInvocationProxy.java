@@ -36,6 +36,7 @@ public abstract class MethodInvocationProxy<T extends MethodInvocationStub> impl
     }
   }
 
+  /** 绑定方法 */
   protected void onBindMethods() {
 
     if (mInvocationStub == null) {
@@ -60,6 +61,7 @@ public abstract class MethodInvocationProxy<T extends MethodInvocationStub> impl
     }
   }
 
+  /** 添加方法代理类型，内部都是代理方法类 */
   private void addMethodProxy(Class<?> hookType) {
     try {
       Constructor<?> constructor = hookType.getDeclaredConstructors()[0];
@@ -80,6 +82,7 @@ public abstract class MethodInvocationProxy<T extends MethodInvocationStub> impl
     }
   }
 
+  /** 添加方法（Hook） */
   public MethodProxy addMethodProxy(MethodProxy methodProxy) {
     return mInvocationStub.addMethodProxy(methodProxy);
   }

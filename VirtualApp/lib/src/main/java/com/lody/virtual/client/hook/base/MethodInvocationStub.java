@@ -37,12 +37,13 @@ public class MethodInvocationStub<T> {
   private LogInvocation.Condition mInvocationLoggingCondition = LogInvocation.Condition.NEVER;
 
 
+  /** 获取所有 Hook 方法类 */
   public Map<String, MethodProxy> getAllHooks() {
     return mInternalMethodProxies;
   }
 
 
-  // build proxy object.
+  /** 创建代理对象 */
   public MethodInvocationStub(T baseInterface, Class<?>... proxyInterfaces) {
     this.mBaseInterface = baseInterface;
     if (baseInterface != null) {
@@ -81,7 +82,7 @@ public class MethodInvocationStub<T> {
   }
 
   /**
-   * Copy all proxies from the input HookDelegate.
+   * 复制所有 Hook 方法。
    *
    * @param from the HookDelegate we copy from.
    */
@@ -90,7 +91,7 @@ public class MethodInvocationStub<T> {
   }
 
   /**
-   * Add a method proxy.
+   * 添加 Hook 方法类。
    *
    * @param methodProxy proxy
    */
@@ -109,7 +110,7 @@ public class MethodInvocationStub<T> {
   }
 
   /**
-   * Remove a method proxy.
+   * 移除 Hook 方法。
    *
    * @param hookName proxy
    * @return The proxy you removed
@@ -119,7 +120,7 @@ public class MethodInvocationStub<T> {
   }
 
   /**
-   * Remove a method proxy.
+   * 移除 Hook 方法。
    *
    * @param methodProxy target proxy
    */
@@ -137,7 +138,7 @@ public class MethodInvocationStub<T> {
   }
 
   /**
-   * Get the startUniformer by its name.
+   * 获取 Hook 方法。
    *
    * @param name name of the Hook
    * @param <H>  Type of the Hook
@@ -149,14 +150,14 @@ public class MethodInvocationStub<T> {
   }
 
   /**
-   * @return Proxy interface
+   * @return 代理对象。
    */
   public T getProxyInterface() {
     return mProxyInterface;
   }
 
   /**
-   * @return Origin Interface
+   * @return 原始对象。
    */
   public T getBaseInterface() {
     return mBaseInterface;
@@ -174,18 +175,22 @@ public class MethodInvocationStub<T> {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
       MethodProxy methodProxy = getMethodProxy(method.getName());
       boolean useProxy = (methodProxy != null && methodProxy.isEnable());
+
+
       boolean mightLog = (mInvocationLoggingCondition != LogInvocation.Condition.NEVER) ||
-          (methodProxy != null && methodProxy.getInvocationLoggingCondition() != LogInvocation.Condition.NEVER);
+          (methodProxy != null && methodProxy.getInvocationLoggingCondition() !=
+              LogInvocation.Condition.NEVER);
 
       String argStr = null;
       Object res = null;
       Throwable exception = null;
+
       if (mightLog) {
-        // Arguments to string is done before the method is called because the method might actually change it
+        // Arguments to string is done before the method is called
+        // because the method might actually change it
         argStr = Arrays.toString(args);
         argStr = argStr.substring(1, argStr.length() - 1);
       }
-
 
       try {
         if (useProxy && methodProxy.beforeCall(mBaseInterface, method, args)) {
@@ -194,13 +199,16 @@ public class MethodInvocationStub<T> {
         } else {
           res = method.invoke(mBaseInterface, args);
         }
+
         return res;
 
       } catch (Throwable t) {
         exception = t;
+
         if (exception instanceof InvocationTargetException && ((InvocationTargetException) exception).getTargetException() != null) {
           exception = ((InvocationTargetException) exception).getTargetException();
         }
+
         throw exception;
 
       } finally {
